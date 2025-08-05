@@ -6,10 +6,11 @@ interface EnvConfig {
     PORT: string,
     DB_URL: string,
     NODE_ENV: "development" | "production"
+    BCRYPT_SALT_ROUND:number,
 }
 
 const loadEnvVariables = (): EnvConfig => {
-    const requiredEnvVariables: string[] = ["PORT", "DB_URL", "NODE_ENV"];
+    const requiredEnvVariables: string[] = ["PORT", "DB_URL", "NODE_ENV","BCRYPT_SALT_ROUND"];
 
     requiredEnvVariables.forEach(key => {
         if (!process.env[key]) {
@@ -21,7 +22,9 @@ const loadEnvVariables = (): EnvConfig => {
         PORT: process.env.PORT as string,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         DB_URL: process.env.DB_URL!,
-        NODE_ENV: process.env.NODE_ENV as "development" | "production"
+        NODE_ENV: process.env.NODE_ENV as "development" | "production",
+        BCRYPT_SALT_ROUND: parseInt(process.env.BCRYPT_SALT_ROUND as string, 15),
+
     }
 }
 
