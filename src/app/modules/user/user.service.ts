@@ -4,6 +4,7 @@ import { User } from "./user.model";
 import AppError from "../../../helpers/AppError";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../../config/envConfig";
+import { QueryBuilder } from "../../../utils/QueryBuilder";
 
 
 const createNewUser = async (payload: Partial<IUser> )=>{
@@ -41,6 +42,39 @@ const {email , password , ...rest} = payload;
     return user;
 }
 
+const getAllUsers = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(User.find(), query)
+    .filter()
+    .search(["email", "name"]) 
+    .sort()
+    .paginate();
+
+  const data = await queryBuilder.build();
+  const meta = await queryBuilder.getMeta();
+
+  return { data, meta };
+};
+
+const getSingleUser = async (userId: string) => {
+  const user = await User.findById(userId)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+  return user;
+};
+
+
+const getUsersByRole = async (role: string) => {
+  if (!Object.values(Role).includes(role as Role)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid role");
+  }
+
+  const users = await User.find({ role });
+
+  return users;
+};
+
+
 const updateModeratorApprovalStatus = async (
   userId: string,
   approvalStatus: ModeratorApprovalStatus
@@ -70,8 +104,76 @@ const updateModeratorApprovalStatus = async (
   return updatedUser;
 };
 
+const updateAccountStatus = async (id: string, status?: string) => {
+  if (!status || typeof status !== 'string') {
+    throw new AppError(httpStatus.BAD_REQUEST, "Status is required and must be a string");
+  }
+
+  const normalizedStatus = status.trim().toLowerCase() as isActive;
+
+  if (!Object.values(isActive).includes(normalizedStatus)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid account status");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    id,
+    { isActive: normalizedStatus }, // এখানে ঠিক করা হয়েছে
+    { new: true }
+  );
+
+  if (!updatedUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return updatedUser;
+};
+ const updateUser = async (userId: string, updateData: Partial<IUser>) => {
+  if (updateData && "role" in updateData) {
+    delete updateData.role;  
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return updatedUser;
+};
+
+const updateUserRole = async (userId: string, newRole: Role) => {
+  
+  if (!Object.values(Role).includes(newRole)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid role");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { role: newRole },
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+
+  return updatedUser;
+};
+
+
 export const UserService = {
+  getAllUsers,
+  getSingleUser,
+  getUsersByRole,
     createNewUser,
-    updateModeratorApprovalStatus
+    updateModeratorApprovalStatus,
+    updateAccountStatus,
+    updateUser,
+    updateUserRole,
+    
   
 }
