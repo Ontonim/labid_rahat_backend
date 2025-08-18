@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-dynamic-delete */
 import { Query } from "mongoose";
 
 export class QueryBuilder<T> {
