@@ -26,6 +26,7 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemailer": "^6.4.17",
     "eslint": "^9.32.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3",
@@ -42,6 +43,7 @@
     "js": "^0.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.5",
+    "nodemailer": "^7.0.5",
     "zod": "^4.0.10"
   }
 }
