@@ -3,6 +3,7 @@ import { UserRoutes } from "../modules/user/user.route"
 import { AuthRoutes } from "../modules/auth/auth.route"
 import { TaskRoutes } from "../modules/task/task.route"
 import { ContentRequestRoutes } from "../modules/contentRequest/contentReq.route"
+import { UpcomingVideoRoutes } from "../modules/upCommingVideo/upCommingVideo.route"
 
 
 export const router = Router()
@@ -23,6 +24,10 @@ const moduleRoutes = [
     {
         path: "/contentRequest",
         route: ContentRequestRoutes
+    },
+    {
+        path: "/upcomingVideos",
+        route: UpcomingVideoRoutes
     }
 ]
 
