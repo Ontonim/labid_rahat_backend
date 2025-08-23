@@ -3,9 +3,9 @@ import { TaskService } from "./task.service";
 import { catchAsync } from "../../../utils/catchAsync";
 import { SendResponse } from "../../../utils/sendResponse";
 import { User } from "../user/user.model";
+import { sendMail } from "../../../utils/nodeMailer";
 
 // POST - Create Task
-
 
 
 export const createTask = catchAsync(async (req: Request, res: Response) => {
@@ -29,8 +29,8 @@ export const createTask = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  const assignerExists = await User.findById(assignedBy);
-  if (!assignerExists) {
+  const assignedByExists = await User.findById(assignedBy);
+  if (!assignedByExists) {
     return SendResponse(res, {
       statusCode: 404,
       success: false,
@@ -39,8 +39,8 @@ export const createTask = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  const assigneeExists = await User.findById(assignedTo);
-  if (!assigneeExists) {
+  const assignedToExists = await User.findById(assignedTo);
+  if (!assignedToExists) {
     return SendResponse(res, {
       statusCode: 404,
       success: false,
@@ -56,15 +56,20 @@ export const createTask = catchAsync(async (req: Request, res: Response) => {
   };
 
   const task = await TaskService.createTask(payload);
+//  console.log(assignedToExists.email, "assignedToExists email");
+  await sendMail(
+    assignedToExists.email,
+    "New Task Assigned",
+    `Hello ${assignedToExists.name},\n\nYou have been assigned a new task: ${task.title}\n\nPlease check your Task Manager dashboard.`
+  );
 
   SendResponse(res, {
     statusCode: 201,
     success: true,
-    message: "Task created successfully",
+    message: "Task created successfully & email sent",
     data: task,
   });
 });
-
 
 
 // GET - All Tasks
