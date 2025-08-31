@@ -6,7 +6,7 @@ import { UpcomingVideoModel } from "./upCommingVideo.model";
 
 const createUpcomingVideoUpdate = async (payload: IVideo) => {
     return await UpcomingVideoModel.create(payload);
-  },
+  }
 
 
    const getUpcomingVideos = async () => {

@@ -6,6 +6,7 @@ import { User } from "../user/user.model";
 import { isActive } from "../user/user.interface";
 import { Response } from "express";
 import { createUserTokens } from "../../../utils/userToken";
+import { envVars } from "../../../config/envConfig";
 
 const  loginUser = async (email: string, password: string) => {
     const user = await User.findOne({ email });
@@ -43,9 +44,24 @@ const logoutUser = async (res: Response) => {
   return { message: "Logged out successfully" };
 };
 
+const resetPassword = async (email: string, newPassword: string) => {
+  const user = await User.findOne({ email });
+
+  if (!user) throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  if (user.isDeleted) throw new AppError(httpStatus.FORBIDDEN, "User is deleted");
+  if (user.isActive === isActive.BLOCKED) throw new AppError(httpStatus.FORBIDDEN, "User is blocked");
+
+  const hashedPassword = await bcryptjs.hash(newPassword, envVars.BCRYPT_SALT_ROUND);
+  user.password = hashedPassword;
+  await user.save();
+
+  return { message: "Password reset successfully" };
+};
 
 export const AuthService = {
     loginUser,
-    logoutUser
-}
+    logoutUser,
+    resetPassword
+};
+
 
