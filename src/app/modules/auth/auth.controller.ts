@@ -40,10 +40,22 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const { email, newPassword } = req.body;
+
+  const result = await AuthService.resetPassword(email, newPassword);
+
+  SendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: result.message,
+    data: null,
+  });
+});
 
 
 export const authController = {
     loginUser,
     logoutUser,
-    
+    resetPassword
 };
