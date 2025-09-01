@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserRoutes = void 0;
+const express_1 = require("express");
+const user_controller_1 = require("./user.controller");
+const checkAuth_1 = require("../../../middleWares/checkAuth");
+const validateRequest_1 = require("../../../middleWares/validateRequest");
+const user_validation_1 = require("./user.validation");
+const router = (0, express_1.Router)();
+router.post("/", (0, validateRequest_1.validateRequest)(user_validation_1.createUserValidation), user_controller_1.userController.createNewUser);
+router.get("/", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.getAllUsers);
+router.patch("/approval", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.updateModeratorApprovalStatus);
+router.get("/:id", (0, checkAuth_1.checkAuth)("admin", "user", "moderator"), user_controller_1.userController.getSingleUser);
+router.get("/role/:role", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.getUsersByRole);
+router.patch("/:id", (0, checkAuth_1.checkAuth)("admin"), (0, validateRequest_1.validateRequest)(user_validation_1.updateUserValidation), user_controller_1.userController.updateUser);
+router.patch("/:id/status", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.updateAccountStatus);
+router.patch("/:id/role", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.updateUserRole);
+exports.UserRoutes = router;

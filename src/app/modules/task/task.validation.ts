@@ -3,7 +3,7 @@ import { TaskStatus, TaskPriority } from "./task.interface";
 
 
 export const createTaskValidation = z.object({
-  body: z.object({
+
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
     assignedBy: z.string().min(1, "assignedBy is required"), // ObjectId as string
@@ -22,7 +22,7 @@ export const createTaskValidation = z.object({
       "completedAt must be a valid date string"
     ).optional(),
     notes: z.string().optional(),
-  }),
+
 });
 
 

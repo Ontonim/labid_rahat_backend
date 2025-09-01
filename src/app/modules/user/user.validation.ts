@@ -3,7 +3,7 @@ import { Role, isActive } from "./user.interface";
 
 
 export const createUserValidation = z.object({
-  body: z.object({
+ 
     name: z.string()
       .min(3, "Name must be at least 3 characters")
       .max(50, "Name cannot exceed 50 characters"),
@@ -17,12 +17,11 @@ export const createUserValidation = z.object({
     role: z.enum([Role.USER, Role.ADMIN, Role.MODERATOR, Role.PENDING]).optional(),
     isActive: z.enum([isActive.ACTIVE, isActive.INACTIVE, isActive.BLOCKED]).optional(),
     isVerified: z.boolean().optional(),
-  }),
+
 });
 
 export const updateUserValidation = z.object({
-  body: z.object({
-    name: z.string()
+  name: z.string()
       .min(3, "Name must be at least 3 characters")
       .max(50, "Name cannot exceed 50 characters")
       .optional(),
@@ -35,5 +34,5 @@ export const updateUserValidation = z.object({
     isActive: z.enum([isActive.ACTIVE, isActive.INACTIVE, isActive.BLOCKED])
       .optional(),
     isVerified: z.boolean().optional(),
-  }),
-});
+  })
+

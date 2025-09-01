@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BlogRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const blogs_controller_1 = require("./blogs.controller");
+const checkAuth_1 = require("../../../middleWares/checkAuth");
+const validateRequest_1 = require("../../../middleWares/validateRequest");
+const blogs_validation_1 = require("./blogs.validation");
+const router = express_1.default.Router();
+router.post("/admin", (0, checkAuth_1.checkAuth)("admin", "moderator"), (0, validateRequest_1.validateRequest)(blogs_validation_1.createBlogByAdminValidation), blogs_controller_1.BlogController.createBlogByAdmin);
+router.get("/admin", (0, checkAuth_1.checkAuth)("admin", "moderator"), blogs_controller_1.BlogController.getAdminBlogs);
+router.post("/user", (0, checkAuth_1.checkAuth)("user", "moderator"), (0, validateRequest_1.validateRequest)(blogs_validation_1.submitBlogByUserValidation), blogs_controller_1.BlogController.submitBlogByUser);
+router.get("/user/approvedBlog", (0, checkAuth_1.checkAuth)("user", "admin", "moderator"), blogs_controller_1.BlogController.getUserBlogs);
+router.patch("/update", (0, checkAuth_1.checkAuth)("user", "admin", "moderator"), (0, validateRequest_1.validateRequest)(blogs_validation_1.updateBlogValidation), blogs_controller_1.BlogController.updateBlog);
+router.get("/user/pending", (0, checkAuth_1.checkAuth)("admin"), blogs_controller_1.BlogController.getPendingUserBlogs);
+router.delete("/deleteBlog/:id", (0, checkAuth_1.checkAuth)("admin", "moderator"), blogs_controller_1.BlogController.deleteBlog);
+router.patch("/admin/approve/:id", (0, checkAuth_1.checkAuth)("admin"), blogs_controller_1.BlogController.approveBlog);
+exports.BlogRoutes = router;
