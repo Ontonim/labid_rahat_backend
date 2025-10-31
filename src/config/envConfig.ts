@@ -13,6 +13,9 @@ interface EnvConfig {
   JWT_REFRESH_SECRET: string;
   JWT_REFRESH_SECRET_EXPIRED: string;
   FRONTEND_URL: string;
+  SUPER_ADMIN_EMAIL: string;
+  SUPER_ADMIN_PASSWORD: string;
+  SUPER_ADMIN_PHONE: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -26,7 +29,10 @@ const loadEnvVariables = (): EnvConfig => {
     "JWT_ACCESS_EXPIRES",
     "JWT_REFRESH_SECRET",
     "JWT_REFRESH_SECRET_EXPIRED",
-    "FRONTEND_URL"
+    "FRONTEND_URL",
+    "SUPER_ADMIN_EMAIL",
+    "SUPER_ADMIN_PASSWORD",
+    "SUPER_ADMIN_PHONE",
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -46,6 +52,9 @@ const loadEnvVariables = (): EnvConfig => {
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
     JWT_REFRESH_SECRET_EXPIRED: process.env.JWT_REFRESH_SECRET_EXPIRED as string,
     FRONTEND_URL:process.env.FRONTEND_URL as string,
+    SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+    SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
+    SUPER_ADMIN_PHONE: process.env.SUPER_ADMIN_PHONE as string,
 
   };
 };

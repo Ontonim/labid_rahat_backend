@@ -8,26 +8,45 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskService = void 0;
 const task_model_1 = require("./task.model");
-// Create a new Task
+const user_model_1 = require("../user/user.model");
 const createTask = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const task = yield task_model_1.Task.create(payload);
+    const { assignee } = payload, rest = __rest(payload, ["assignee"]);
+    // Step 1: validate if assignee emails are provided
+    if (!assignee || !Array.isArray(assignee) || assignee.length === 0) {
+        throw new Error("Assignee emails are required.");
+    }
+    // Step 2: find users by their email addresses
+    const users = yield user_model_1.User.find({ email: { $in: assignee } }).select("name email role");
+    if (users.length === 0) {
+        throw new Error("No valid users found for the provided assignee emails.");
+    }
+    // Step 3: create a new task with full user info
+    const taskData = Object.assign(Object.assign({}, rest), { assignee: users });
+    const task = yield task_model_1.Task.create(taskData);
     return task;
 });
 // Get all Tasks
 const getAllTasks = () => __awaiter(void 0, void 0, void 0, function* () {
-    const tasks = yield task_model_1.Task.find()
-        .populate("assignedBy", "name email")
-        .populate("assignedTo", "name email");
+    const tasks = yield task_model_1.Task.find();
     return tasks;
 });
 // Get single Task by id
 const getTaskById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const task = yield task_model_1.Task.findById(id)
-        .populate("assignedBy", "name email")
-        .populate("assignedTo", "name email");
+    const task = yield task_model_1.Task.findById(id);
     return task;
 });
 // Update Task by id
@@ -40,9 +59,17 @@ const updateTask = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
         .populate("assignedTo", "name email");
     return task;
 });
+const deleteTask = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const task = yield task_model_1.Task.findByIdAndDelete(id);
+    if (!task) {
+        throw new Error("Task not found or already deleted.");
+    }
+    return task;
+});
 exports.TaskService = {
     createTask,
     getAllTasks,
     getTaskById,
     updateTask,
+    deleteTask,
 };

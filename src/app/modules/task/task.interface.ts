@@ -14,20 +14,24 @@ export enum TaskPriority {
   URGENT = "urgent"
 }
 
-export interface ITask {
-  _id?: string;
+
+
+export type Assignee = {
+  name: string;
+  email: string;
+  role: string;
+};
+
+
+export interface ITask extends Document {
   title: string;
-  description: string;
-  assignedBy: Types.ObjectId | string;
-  assignedTo: Types.ObjectId | string;
+  description?: string;
+  assignee: Assignee[];       // Multiple users can be assigned
   status: TaskStatus;
   priority: TaskPriority;
   dueDate?: Date;
-  attachments?: string[];
   createdAt?: Date;
   updatedAt?: Date;
-  completedAt?: Date;
-  notes?: string;
 }
 
 export interface ITaskAssignment {

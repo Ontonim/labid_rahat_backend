@@ -16,7 +16,10 @@ const loadEnvVariables = () => {
         "JWT_ACCESS_EXPIRES",
         "JWT_REFRESH_SECRET",
         "JWT_REFRESH_SECRET_EXPIRED",
-        "FRONTEND_URL"
+        "FRONTEND_URL",
+        "SUPER_ADMIN_EMAIL",
+        "SUPER_ADMIN_PASSWORD",
+        "SUPER_ADMIN_PHONE",
     ];
     requiredEnvVariables.forEach((key) => {
         if (!process.env[key]) {
@@ -33,6 +36,9 @@ const loadEnvVariables = () => {
         JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
         JWT_REFRESH_SECRET_EXPIRED: process.env.JWT_REFRESH_SECRET_EXPIRED,
         FRONTEND_URL: process.env.FRONTEND_URL,
+        SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL,
+        SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD,
+        SUPER_ADMIN_PHONE: process.env.SUPER_ADMIN_PHONE,
     };
 };
 exports.envVars = loadEnvVariables();
