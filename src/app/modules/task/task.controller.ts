@@ -9,64 +9,14 @@ import { sendMail } from "../../../utils/nodeMailer";
 
 
 export const createTask = catchAsync(async (req: Request, res: Response) => {
-  const { assignedBy, assignedTo } = req.query;
-
-  if (!assignedBy || typeof assignedBy !== "string") {
-    return SendResponse(res, {
-      statusCode: 400,
-      success: false,
-      message: "assignedBy user id is required in query",
-      data: null,
-    });
-  }
-
-  if (!assignedTo || typeof assignedTo !== "string") {
-    return SendResponse(res, {
-      statusCode: 400,
-      success: false,
-      message: "assignedTo user id is required in query",
-      data: null,
-    });
-  }
-
-  const assignedByExists = await User.findById(assignedBy);
-  if (!assignedByExists) {
-    return SendResponse(res, {
-      statusCode: 404,
-      success: false,
-      message: "AssignedBy user not found",
-      data: null,
-    });
-  }
-
-  const assignedToExists = await User.findById(assignedTo);
-  if (!assignedToExists) {
-    return SendResponse(res, {
-      statusCode: 404,
-      success: false,
-      message: "AssignedTo user not found",
-      data: null,
-    });
-  }
-
-  const payload = {
-    ...req.body,
-    assignedBy,
-    assignedTo,
-  };
+  const payload = req.body;
 
   const task = await TaskService.createTask(payload);
-//  console.log(assignedToExists.email, "assignedToExists email");
-  await sendMail(
-    assignedToExists.email,
-    "New Task Assigned",
-    `Hello ${assignedToExists.name},\n\nYou have been assigned a new task: ${task.title}\n\nPlease check your Task Manager dashboard.`
-  );
 
   SendResponse(res, {
     statusCode: 201,
     success: true,
-    message: "Task created successfully & email sent",
+    message: "Task created successfully",
     data: task,
   });
 });
@@ -86,7 +36,7 @@ export const getAllTasks = catchAsync(async (req: Request, res: Response) => {
 
 // GET - Single Task (id from query)
 export const getTaskById = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.query; 
+  const { id } = req.params;
 
   if (!id || typeof id !== "string") {
     return SendResponse(res, {
@@ -147,3 +97,23 @@ export const updateTask = catchAsync(async (req: Request, res: Response) => {
     data: updatedTask,
   });
 });
+export const deleteTask = catchAsync(async(req: Request, res: Response) => {
+  const { id } = req.query;
+
+  if (!id || typeof id !== "string") {
+    return SendResponse(res, {
+      statusCode: 400,
+      success: false,
+      message: "Task id is required in query",
+      data: null,
+    });
+  }
+  const deletedTask = await TaskService.deleteTask(id);
+
+  SendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Task deleted successfully",
+    data: deletedTask,
+  });
+})

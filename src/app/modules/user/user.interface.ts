@@ -23,10 +23,10 @@ export interface IUser {
   email: string;
   password: string;
   role:Role;
-  status: isActive;
+  status?: isActive;
 picture?: string; 
-  isActive: isActive;
-  isDeleted: boolean;
+  isActive?: isActive;
+  isDeleted?: boolean;
    isVerified?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
