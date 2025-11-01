@@ -15,35 +15,41 @@ class QueryBuilder {
         this.modelQuery = modelQuery;
         this.query = query;
     }
+    // Filter: category, status, author, etc.
     filter() {
         const filter = Object.assign({}, this.query);
-        const excludedFields = ["searchTerm", "sort", "fields", "page", "limit"];
+        const excludedFields = ["searchTerm", "searchTerms", "sort", "fields", "page", "limit"];
         excludedFields.forEach(field => delete filter[field]);
         this.modelQuery = this.modelQuery.find(filter);
         return this;
     }
-    search(searchAbleFields) {
-        const searchTerm = this.query.searchTerm;
-        if (searchTerm) {
+    // Search: safe search using RegExp
+    search(searchableFields) {
+        const searchTerm = this.query.searchTerm || this.query.searchTerms;
+        if (searchTerm && typeof searchTerm === "string" && searchTerm.trim() !== "") {
+            const regex = new RegExp(searchTerm.trim(), "i"); // safe RegExp
             this.modelQuery = this.modelQuery.find({
-                $or: searchAbleFields.map(field => ({
-                    [field]: { $regex: searchTerm, $options: "i" },
-                })),
+                $or: searchableFields.map(field => ({ [field]: regex })),
             });
         }
         return this;
     }
+    // Sorting
     sort() {
         const sortBy = this.query.sort || "-createdAt";
         this.modelQuery = this.modelQuery.sort(sortBy);
         return this;
     }
+    // Select specific fields
     fields() {
         var _a;
         const fields = ((_a = this.query.fields) === null || _a === void 0 ? void 0 : _a.split(",").join(" ")) || "";
-        this.modelQuery = this.modelQuery.select(fields);
+        if (fields) {
+            this.modelQuery = this.modelQuery.select(fields);
+        }
         return this;
     }
+    // Pagination
     paginate() {
         const page = this.query.page ? parseInt(this.query.page) : 1;
         const limit = this.query.limit ? parseInt(this.query.limit) : 10;
@@ -51,9 +57,11 @@ class QueryBuilder {
         this.modelQuery = this.modelQuery.skip(skip).limit(limit);
         return this;
     }
+    // Build final query
     build() {
         return this.modelQuery;
     }
+    // Meta info for pagination
     getMeta() {
         return __awaiter(this, void 0, void 0, function* () {
             const totalDocuments = yield this.modelQuery.model.countDocuments();

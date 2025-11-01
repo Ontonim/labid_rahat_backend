@@ -6,14 +6,17 @@ export enum TBlogStatus {
 }
 
 export interface IBlog {
- title: string;
-  featureImage?: string;
-  category: string;
-  description: string;
+  title: string;
+  excerpt: string;
   content: string;
-  status: "pending" | "approved";
-  author: mongoose.Types.ObjectId | string;
-  authorModel: "User" | "Admin";
+  category: string;
+  source?: string;
+  image?: string;
+  readTime?: string;
+  date: Date;
+  status: TBlogStatus;
+  author: string;
+
   createdAt: Date;
   updatedAt: Date;
 }

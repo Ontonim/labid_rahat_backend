@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNewAccessTokenWithRefreshToken = exports.createUserTokens = void 0;
-const user_interface_1 = require("../app/modules/user/user.interface");
 const user_model_1 = require("../app/modules/user/user.model");
 const envConfig_1 = require("../config/envConfig");
 const AppError_1 = __importDefault(require("../helpers/AppError"));
@@ -42,10 +41,6 @@ const createNewAccessTokenWithRefreshToken = (refreshToken) => __awaiter(void 0,
     const isUserExist = yield user_model_1.User.findOne({ email });
     if (!isUserExist) {
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User Not Exist');
-    }
-    if (isUserExist.isActive === user_interface_1.isActive.BLOCKED ||
-        isUserExist.isActive === user_interface_1.isActive.INACTIVE) {
-        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User is Blocked/Inactive');
     }
     if (isUserExist.isDeleted) {
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User deleted');

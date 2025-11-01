@@ -25,7 +25,7 @@ const sendMail = (to, subject, text) => __awaiter(void 0, void 0, void 0, functi
         },
     });
     yield transporter.sendMail({
-        from: `"Task Manager" <${process.env.SMTP_USER}>`,
+        from: `"Labid Rahat" <${process.env.SMTP_USER}>`,
         to,
         subject,
         text,

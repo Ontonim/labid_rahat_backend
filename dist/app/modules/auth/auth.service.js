@@ -29,7 +29,6 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const AppError_1 = __importDefault(require("../../../helpers/AppError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const user_model_1 = require("../user/user.model");
-const user_interface_1 = require("../user/user.interface");
 const userToken_1 = require("../../../utils/userToken");
 const envConfig_1 = require("../../../config/envConfig");
 const loginUser = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
@@ -39,9 +38,6 @@ const loginUser = (email, password) => __awaiter(void 0, void 0, void 0, functio
     }
     if (user.isDeleted) {
         throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, "User is deleted");
-    }
-    if (user.isActive === user_interface_1.isActive.BLOCKED) {
-        throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, "User is blocked");
     }
     const isPasswordMatched = yield bcryptjs_1.default.compare(password, user.password || "");
     if (!isPasswordMatched) {
@@ -66,8 +62,6 @@ const resetPassword = (email, newPassword) => __awaiter(void 0, void 0, void 0, 
         throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
     if (user.isDeleted)
         throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, "User is deleted");
-    if (user.isActive === user_interface_1.isActive.BLOCKED)
-        throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, "User is blocked");
     const hashedPassword = yield bcryptjs_1.default.hash(newPassword, envConfig_1.envVars.BCRYPT_SALT_ROUND);
     user.password = hashedPassword;
     yield user.save();

@@ -68,7 +68,7 @@ export const getTaskById = catchAsync(async (req: Request, res: Response) => {
 
 
 export const updateTask = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.query;
+  const { id } = req.params;
 
   if (!id || typeof id !== "string") {
     return SendResponse(res, {
@@ -98,7 +98,7 @@ export const updateTask = catchAsync(async (req: Request, res: Response) => {
   });
 });
 export const deleteTask = catchAsync(async(req: Request, res: Response) => {
-  const { id } = req.query;
+  const { id } = req.params;
 
   if (!id || typeof id !== "string") {
     return SendResponse(res, {

@@ -1,21 +1,19 @@
 import mongoose, { Schema } from "mongoose";
 import { IBlog } from "./blogs.interface";
 
-
-
 const BlogSchema: Schema = new Schema({
   title: { type: String, required: true, unique: true },
-  featureImage: { type: String },
-  category: { type: String, required: true },
-  description: { type: String, required: true },
+  excerpt: { type: String, required: true },
   content: { type: String, required: true },
-  status: { type: String, enum: ["pending", "approved"], default: "pending" },
-
-  author: { type: Schema.Types.ObjectId, required: true, refPath: "authorModel" },
-  authorModel: { type: String, required: true, enum: ["User", "Admin"] },
+  category: { type: String, required: true },
+  source: { type: String },
+  image: { type: String },
+  readTime: { type: String },
+  date: { type: Date, required: true },
+  author: { type: String, required: true, refPath: "authorModel" },
 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
 
-export const BlogModel = mongoose.model<IBlog>("Blog", BlogSchema);
+export const Blog = mongoose.model<IBlog>("Blog", BlogSchema);

@@ -14,7 +14,7 @@ export const createUserValidation = z.object({
     picture: z.string()
       .url("Invalid image URL")
       .optional(),
-    role: z.enum([Role.USER, Role.ADMIN, Role.MODERATOR, Role.PENDING]).optional(),
+    role: z.enum([Role.USER, Role.ADMIN, Role.MODERATOR]).optional(),
     isActive: z.enum([isActive.ACTIVE, isActive.INACTIVE, isActive.BLOCKED]).optional(),
     isVerified: z.boolean().optional(),
 

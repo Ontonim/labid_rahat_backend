@@ -55,8 +55,7 @@ const updateTask = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
         new: true,
         runValidators: true,
     })
-        .populate("assignedBy", "name email")
-        .populate("assignedTo", "name email");
+        .populate("assignee", "name email");
     return task;
 });
 const deleteTask = (id) => __awaiter(void 0, void 0, void 0, function* () {

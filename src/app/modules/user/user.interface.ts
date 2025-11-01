@@ -4,30 +4,25 @@ export enum isActive {
   BLOCKED = "blocked"
 }
 export enum Role {
-  USER = "user",
-  MODERATOR = "moderator",
   ADMIN = "admin",
-  PENDING = "pending",
+  MODERATOR = "moderator",
+  MEMBER = "member",
+  USER = "user"
 }
-
-export enum ModeratorApprovalStatus {
-  PENDING = "pending",
-  ACCEPTED = "accepted",
-  REJECTED = "rejected",
-}
-
-
 export interface IUser {
   _id?: string;
   name: string;
+  role: string;
+  access?: Role;
+  bio?: string;
+  expertise?: string[]; 
+  image?: string;
   email: string;
   password: string;
-  role:Role;
+  mobile?: string;
   status?: isActive;
-picture?: string; 
-  isActive?: isActive;
   isDeleted?: boolean;
-   isVerified?: boolean;
+  isVerified?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
