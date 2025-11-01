@@ -5,6 +5,7 @@ import AppError from "../../../helpers/AppError";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../../config/envConfig";
 import { QueryBuilder } from "../../../utils/QueryBuilder";
+import th from "zod/v4/locales/th.cjs";
 
 
 const createNewUser = async (payload: Partial<IUser> )=>{
@@ -99,8 +100,9 @@ const updateAccountStatus = async (id: string, status?: string) => {
   return updatedUser;
 };
  const updateUser = async (userId: string, updateData: Partial<IUser>) => {
-  if (updateData && "role" in updateData) {
-    delete updateData.role;  
+  if (updateData && "access" in updateData) {
+    delete updateData.access;  
+    throw new AppError(httpStatus.BAD_REQUEST, "Access field cannot be updated directly");
   }
 
   const updatedUser = await User.findByIdAndUpdate(userId, updateData, {

@@ -37,7 +37,7 @@ router.get("/role/:role",
 
 router.patch(
   "/:id",
-  checkAuth("admin"),
+  checkAuth("admin","member"),
 
   userController.updateUser
 );

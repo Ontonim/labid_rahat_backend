@@ -8,6 +8,7 @@ import { VideoRoutes } from "../app/modules/video/video.route"
 import { CommentRoutes } from "../app/modules/comment/comment.route"
 import { BlogRoutes } from "../app/modules/blogs/blog.route"
 import { NewsletterRoutes } from "../app/modules/newslatter/newslatter.route"
+import { ContactRoutes } from "../app/modules/contactMessage/contactMessage.route"
 
 
 export const router = Router()
@@ -48,6 +49,10 @@ const moduleRoutes = [
     {
         path: "/newsletter",
         route: NewsletterRoutes
+    },
+    {
+        path: "/contact",
+        route: ContactRoutes
     }
 ]
 

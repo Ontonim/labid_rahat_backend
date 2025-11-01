@@ -11,6 +11,7 @@ const video_route_1 = require("../app/modules/video/video.route");
 const comment_route_1 = require("../app/modules/comment/comment.route");
 const blog_route_1 = require("../app/modules/blogs/blog.route");
 const newslatter_route_1 = require("../app/modules/newslatter/newslatter.route");
+const contactMessage_route_1 = require("../app/modules/contactMessage/contactMessage.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -48,6 +49,10 @@ const moduleRoutes = [
     {
         path: "/newsletter",
         route: newslatter_route_1.NewsletterRoutes
+    },
+    {
+        path: "/contact",
+        route: contactMessage_route_1.ContactRoutes
     }
 ];
 moduleRoutes.forEach((route) => {

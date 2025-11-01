@@ -10,7 +10,7 @@ router.get("/", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userContr
 router.get("/public", user_controller_1.userController.getAllLimitedMembers);
 router.get("/:id", (0, checkAuth_1.checkAuth)("admin", "user", "member"), user_controller_1.userController.getSingleUser);
 router.get("/role/:role", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.getUsersByRole);
-router.patch("/:id", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.updateUser);
+router.patch("/:id", (0, checkAuth_1.checkAuth)("admin", "member"), user_controller_1.userController.updateUser);
 router.patch("/:id/status", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.updateAccountStatus);
 router.patch("/:id/role", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.updateUserRole);
 router.patch("/delete/:id", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.deleteUser);

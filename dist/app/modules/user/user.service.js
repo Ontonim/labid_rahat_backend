@@ -84,8 +84,9 @@ const updateAccountStatus = (id, status) => __awaiter(void 0, void 0, void 0, fu
     return updatedUser;
 });
 const updateUser = (userId, updateData) => __awaiter(void 0, void 0, void 0, function* () {
-    if (updateData && "role" in updateData) {
-        delete updateData.role;
+    if (updateData && "access" in updateData) {
+        delete updateData.access;
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Access field cannot be updated directly");
     }
     const updatedUser = yield user_model_1.User.findByIdAndUpdate(userId, updateData, {
         new: true,
