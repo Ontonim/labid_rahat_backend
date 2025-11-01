@@ -3,7 +3,7 @@ import { Router } from "express";
 import { userController } from "./user.controller";
 import { checkAuth } from "../../../middleWares/checkAuth";
 import { validateRequest } from "../../../middleWares/validateRequest";
-import { createUserValidation, updateUserValidation } from "./user.validation";
+
 
 
 
@@ -11,7 +11,7 @@ const router = Router();
 
 router.post(
     "/",
-    validateRequest(createUserValidation),
+   checkAuth("admin"),
     userController.createNewUser
 )
 router.get(
@@ -19,15 +19,16 @@ router.get(
     checkAuth("admin"),
     userController.getAllUsers
 );
-router.patch(
-  "/approval",
-  checkAuth("admin"),
-  userController.updateModeratorApprovalStatus
+
+router.get(
+    "/public",
+  
+    userController.getAllLimitedMembers
 );
 
 router.get(
     "/:id",
-    checkAuth("admin","user","moderator"),
+    checkAuth("admin","user","member"),
     userController.getSingleUser
 );
 router.get("/role/:role",
@@ -36,8 +37,8 @@ router.get("/role/:role",
 
 router.patch(
   "/:id",
-  checkAuth("admin"),
-  validateRequest(updateUserValidation),
+  checkAuth("admin","member"),
+
   userController.updateUser
 );
 router.patch(
@@ -51,6 +52,10 @@ router.patch(
   checkAuth("admin"),
   userController.updateUserRole
 );
-
+router.patch(
+  "/delete/:id",
+  checkAuth("admin"),
+  userController.deleteUser
+);
 
 export const  UserRoutes = router;

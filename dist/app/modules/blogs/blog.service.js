@@ -9,76 +9,39 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BlogServices = void 0;
+exports.blogService = void 0;
 const QueryBuilder_1 = require("../../../utils/QueryBuilder");
+const comment_model_1 = require("../comment/comment.model");
 const blogs_model_1 = require("./blogs.model");
-// ১. Admin blog create
-const createBlogByAdmin = (payload, adminId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield blogs_model_1.BlogModel.create(Object.assign(Object.assign({}, payload), { status: "approved", author: adminId, authorModel: "Admin" }));
-});
-// ২. User blog submit
-const submitBlogByUser = (payload, userId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield blogs_model_1.BlogModel.create(Object.assign(Object.assign({}, payload), { status: "pending", author: userId, authorModel: "User" }));
-});
-// ৩. Approve blog
-const approveBlog = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield blogs_model_1.BlogModel.findByIdAndUpdate(id, { status: "approved" }, { new: true });
-});
-// ৪. Update blog (title, description, image)
-const updateBlog = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const updatedBlog = yield blogs_model_1.BlogModel.findByIdAndUpdate(id, payload, {
-        new: true,
-        runValidators: true,
-    });
-    return updatedBlog;
-});
-// ৫. Get Admin Blogs
-const getAdminBlogs = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogQuery = new QueryBuilder_1.QueryBuilder(blogs_model_1.BlogModel.find({ authorModel: "Admin" }), query)
+const getAllBlogs = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const builder = new QueryBuilder_1.QueryBuilder(blogs_model_1.Blog.find(), query)
         .filter()
-        .search(["title", "category", "content"])
+        .search(["title", "excerpt", "content", "category", "author"])
         .sort()
         .fields()
         .paginate();
-    const data = yield blogQuery.build();
-    const meta = yield blogQuery.getMeta();
-    return { data, meta };
+    const blogs = yield builder.build();
+    const meta = yield builder.getMeta();
+    return { blogs, meta };
 });
-const getUserBlogs = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogQuery = new QueryBuilder_1.QueryBuilder(blogs_model_1.BlogModel.find({ authorModel: "User", status: "approved" })
-        .populate("author", "name email"), query)
-        .filter()
-        .search(["title", "category", "content"])
-        .sort()
-        .fields()
-        .paginate();
-    const data = yield blogQuery.build();
-    const meta = yield blogQuery.getMeta();
-    return { data, meta };
-});
-const getPendingUserBlogs = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const status = query.status || "pending";
-    const blogQuery = new QueryBuilder_1.QueryBuilder(blogs_model_1.BlogModel.find({ authorModel: "User", status }).populate("author", "name email"), query)
-        .filter()
-        .search(["title", "category", "content"])
-        .sort()
-        .fields()
-        .paginate();
-    const data = yield blogQuery.build();
-    const meta = yield blogQuery.getMeta();
-    return { data, meta };
+/**
+ * Get single blog by ID including approved comments
+ */
+const getBlogById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const blog = yield blogs_model_1.Blog.findById(id);
+    if (!blog)
+        throw new Error("Blog not found");
+    const comments = yield comment_model_1.Comment.find({ blogId: id, approved: true }).sort({ timestamp: -1 });
+    return Object.assign(Object.assign({}, blog.toObject()), { comments });
 });
 const deleteBlog = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const deletedBlog = yield blogs_model_1.BlogModel.findByIdAndDelete(id);
+    const deletedBlog = yield blogs_model_1.Blog.findByIdAndDelete(id);
+    if (!deletedBlog)
+        throw new Error("Blog not found");
     return deletedBlog;
 });
-exports.BlogServices = {
-    createBlogByAdmin,
-    submitBlogByUser,
-    approveBlog,
-    updateBlog,
-    getAdminBlogs,
-    getUserBlogs,
-    getPendingUserBlogs,
-    deleteBlog
+exports.blogService = {
+    getAllBlogs,
+    getBlogById,
+    deleteBlog,
 };

@@ -15,9 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userController = void 0;
 const catchAsync_1 = require("../../../utils/catchAsync");
 const sendResponse_1 = require("../../../utils/sendResponse");
-const user_interface_1 = require("./user.interface");
 const user_service_1 = require("./user.service");
-const AppError_1 = __importDefault(require("../../../helpers/AppError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const createNewUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_service_1.UserService.createNewUser(req.body);
@@ -58,21 +56,6 @@ const getUsersByRole = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void
         data: users,
     });
 }));
-const updateModeratorApprovalStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.query.id;
-    const approvalStatus = req.query.status;
-    if (approvalStatus !== user_interface_1.ModeratorApprovalStatus.ACCEPTED &&
-        approvalStatus !== user_interface_1.ModeratorApprovalStatus.REJECTED) {
-        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Invalid status query param");
-    }
-    const updatedUser = yield user_service_1.UserService.updateModeratorApprovalStatus(userId, approvalStatus);
-    (0, sendResponse_1.SendResponse)(res, {
-        statusCode: http_status_codes_1.default.OK,
-        success: true,
-        message: `Agent ${approvalStatus}`,
-        data: updatedUser,
-    });
-}));
 const updateAccountStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { status } = req.query;
@@ -106,13 +89,33 @@ const updateUserRole = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void
         data: updatedUser,
     });
 }));
+const getAllLimitedMembers = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const members = yield user_service_1.UserService.getAllLimitedMembers();
+    (0, sendResponse_1.SendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: "Limited members fetched successfully",
+        data: members,
+    });
+}));
+const deleteUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.id;
+    const deletedUser = yield user_service_1.UserService.deleteUser(userId);
+    (0, sendResponse_1.SendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: "User deleted successfully",
+        data: deletedUser,
+    });
+}));
 exports.userController = {
     getAllUsers,
     getSingleUser,
     getUsersByRole,
     createNewUser,
-    updateModeratorApprovalStatus,
+    getAllLimitedMembers,
     updateAccountStatus,
     updateUser,
-    updateUserRole
+    updateUserRole,
+    deleteUser
 };

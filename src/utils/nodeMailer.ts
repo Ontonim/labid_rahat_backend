@@ -12,7 +12,7 @@ export const sendMail = async (to: string, subject: string, text: string) => {
   });
 
   await transporter.sendMail({
-    from: `"Task Manager" <${process.env.SMTP_USER}>`,
+    from: `"Labid Rahat" <${process.env.SMTP_USER}>`,
     to,
     subject,
     text,

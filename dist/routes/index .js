@@ -7,12 +7,15 @@ const auth_route_1 = require("../app/modules/auth/auth.route");
 const task_route_1 = require("../app/modules/task/task.route");
 const contentReq_route_1 = require("../app/modules/contentRequest/contentReq.route");
 const upCommingVideo_route_1 = require("../app/modules/upCommingVideo/upCommingVideo.route");
-const blog_route_1 = require("../app/modules/blogs/blog.route");
 const video_route_1 = require("../app/modules/video/video.route");
+const comment_route_1 = require("../app/modules/comment/comment.route");
+const blog_route_1 = require("../app/modules/blogs/blog.route");
+const newslatter_route_1 = require("../app/modules/newslatter/newslatter.route");
+const contactMessage_route_1 = require("../app/modules/contactMessage/contactMessage.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
-        path: "/user",
+        path: "/members",
         route: user_route_1.UserRoutes
     },
     {
@@ -38,6 +41,18 @@ const moduleRoutes = [
     {
         path: "/videos",
         route: video_route_1.VideoRoutes
+    },
+    {
+        path: "/comments",
+        route: comment_route_1.CommentRoutes
+    },
+    {
+        path: "/newsletter",
+        route: newslatter_route_1.NewsletterRoutes
+    },
+    {
+        path: "/contact",
+        route: contactMessage_route_1.ContactRoutes
     }
 ];
 moduleRoutes.forEach((route) => {

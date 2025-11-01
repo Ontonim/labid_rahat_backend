@@ -40,17 +40,14 @@ const createNewUser = (payload) => __awaiter(void 0, void 0, void 0, function* (
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User Already Exist');
     }
     const passwordHash = yield bcryptjs_1.default.hash(password, envConfig_1.envVars.BCRYPT_SALT_ROUND);
-    const userData = Object.assign(Object.assign({}, rest), { email, password: passwordHash, role: payload.role || user_interface_1.Role.USER, status: user_interface_1.isActive.ACTIVE, isVerified: false, isDeleted: false });
-    if (payload.role === user_interface_1.Role.MODERATOR) {
-        userData.role = user_interface_1.Role.PENDING;
-    }
+    const userData = Object.assign(Object.assign({}, rest), { email, password: passwordHash, role: payload.role || user_interface_1.Role.MEMBER, status: user_interface_1.isActive.ACTIVE, isVerified: false, isDeleted: false });
     const user = yield user_model_1.User.create(userData);
     return user;
 });
 const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const queryBuilder = new QueryBuilder_1.QueryBuilder(user_model_1.User.find(), query)
         .filter()
-        .search(["email", "name"])
+        .search(["name"])
         .sort()
         .paginate();
     const data = yield queryBuilder.build();
@@ -71,23 +68,6 @@ const getUsersByRole = (role) => __awaiter(void 0, void 0, void 0, function* () 
     const users = yield user_model_1.User.find({ role });
     return users;
 });
-const updateModeratorApprovalStatus = (userId, approvalStatus) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!Object.values(user_interface_1.ModeratorApprovalStatus).includes(approvalStatus)) {
-        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Invalid approval status");
-    }
-    let newRole = user_interface_1.Role.USER;
-    if (approvalStatus === user_interface_1.ModeratorApprovalStatus.ACCEPTED) {
-        newRole = user_interface_1.Role.MODERATOR;
-    }
-    const updatedUser = yield user_model_1.User.findByIdAndUpdate(userId, {
-        agentApproval: approvalStatus,
-        role: newRole,
-    }, { new: true });
-    if (!updatedUser) {
-        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
-    }
-    return updatedUser;
-});
 const updateAccountStatus = (id, status) => __awaiter(void 0, void 0, void 0, function* () {
     if (!status || typeof status !== 'string') {
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Status is required and must be a string");
@@ -104,8 +84,9 @@ const updateAccountStatus = (id, status) => __awaiter(void 0, void 0, void 0, fu
     return updatedUser;
 });
 const updateUser = (userId, updateData) => __awaiter(void 0, void 0, void 0, function* () {
-    if (updateData && "role" in updateData) {
-        delete updateData.role;
+    if (updateData && "access" in updateData) {
+        delete updateData.access;
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Access field cannot be updated directly");
     }
     const updatedUser = yield user_model_1.User.findByIdAndUpdate(userId, updateData, {
         new: true,
@@ -126,13 +107,26 @@ const updateUserRole = (userId, newRole) => __awaiter(void 0, void 0, void 0, fu
     }
     return updatedUser;
 });
+const getAllLimitedMembers = () => __awaiter(void 0, void 0, void 0, function* () {
+    const members = yield user_model_1.User.find({ access: user_interface_1.Role.MEMBER }).select("name  role bio expertise image ");
+    return members;
+});
+const deleteUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById(userId);
+    if (!user) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
+    }
+    const deletedUser = yield user_model_1.User.findByIdAndUpdate(userId, { isDeleted: true }, { new: true });
+    return deletedUser;
+});
 exports.UserService = {
     getAllUsers,
     getSingleUser,
     getUsersByRole,
     createNewUser,
-    updateModeratorApprovalStatus,
+    getAllLimitedMembers,
     updateAccountStatus,
     updateUser,
     updateUserRole,
+    deleteUser
 };

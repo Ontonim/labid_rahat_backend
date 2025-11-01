@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { createTask, deleteTask, getAllTasks, getTaskById, updateTask } from "./task.controller";
 import { checkAuth } from "../../../middleWares/checkAuth";
-import { validateRequest } from "../../../middleWares/validateRequest";
 
 
 

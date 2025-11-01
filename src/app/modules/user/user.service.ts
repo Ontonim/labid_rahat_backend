@@ -1,10 +1,11 @@
-import { isActive, IUser, ModeratorApprovalStatus, Role } from "./user.interface";
+import { isActive, IUser, Role} from "./user.interface";
 import httpStatus from "http-status-codes"
 import { User } from "./user.model";
 import AppError from "../../../helpers/AppError";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../../config/envConfig";
 import { QueryBuilder } from "../../../utils/QueryBuilder";
+import th from "zod/v4/locales/th.cjs";
 
 
 const createNewUser = async (payload: Partial<IUser> )=>{
@@ -25,14 +26,12 @@ const {email , password , ...rest} = payload;
         ...rest,
         email,
         password: passwordHash,
-        role: payload.role || Role.USER, 
+        role: payload.role || Role.MEMBER,
         status: isActive.ACTIVE,
         isVerified: false,
         isDeleted: false,
     };
-    if (payload.role === Role.MODERATOR) {
-        userData.role = Role.PENDING; 
-    }
+    
     const user = await User.create(userData);
 
 
@@ -45,7 +44,7 @@ const {email , password , ...rest} = payload;
 const getAllUsers = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(User.find(), query)
     .filter()
-    .search(["email", "name"]) 
+    .search(["name"]) 
     .sort()
     .paginate();
 
@@ -75,34 +74,7 @@ const getUsersByRole = async (role: string) => {
 };
 
 
-const updateModeratorApprovalStatus = async (
-  userId: string,
-  approvalStatus: ModeratorApprovalStatus
-) => {
-  if (!Object.values(ModeratorApprovalStatus).includes(approvalStatus)) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid approval status");
-  }
 
-  let newRole = Role.USER;
-  if (approvalStatus === ModeratorApprovalStatus.ACCEPTED) {
-    newRole = Role.MODERATOR;
-  }
-
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    {
-      agentApproval: approvalStatus,
-      role: newRole,
-    },
-    { new: true }
-  );
-
-  if (!updatedUser) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  return updatedUser;
-};
 
 const updateAccountStatus = async (id: string, status?: string) => {
   if (!status || typeof status !== 'string') {
@@ -128,8 +100,9 @@ const updateAccountStatus = async (id: string, status?: string) => {
   return updatedUser;
 };
  const updateUser = async (userId: string, updateData: Partial<IUser>) => {
-  if (updateData && "role" in updateData) {
-    delete updateData.role;  
+  if (updateData && "access" in updateData) {
+    delete updateData.access;  
+    throw new AppError(httpStatus.BAD_REQUEST, "Access field cannot be updated directly");
   }
 
   const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
@@ -163,17 +136,31 @@ const updateUserRole = async (userId: string, newRole: Role) => {
 
   return updatedUser;
 };
-
-
+const getAllLimitedMembers = async () => {
+  const members = await User.find({ access: Role.MEMBER }).select("name  role bio expertise image ");
+  return members;
+}
+const deleteUser = async (userId: string) => {
+  const user = await User.findById(userId)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+ 
+  const deletedUser = await User.findByIdAndUpdate(
+    userId,
+    { isDeleted: true },
+    { new: true }
+  );
+  return deletedUser;
+}
 export const UserService = {
   getAllUsers,
   getSingleUser,
   getUsersByRole,
-    createNewUser,
-    updateModeratorApprovalStatus,
-    updateAccountStatus,
-    updateUser,
-    updateUserRole,
-    
-  
+  createNewUser,
+  getAllLimitedMembers,
+  updateAccountStatus,
+  updateUser,
+  updateUserRole,
+  deleteUser
 }

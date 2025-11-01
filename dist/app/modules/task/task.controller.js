@@ -62,7 +62,7 @@ exports.getTaskById = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 
     });
 }));
 exports.updateTask = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.query;
+    const { id } = req.params;
     if (!id || typeof id !== "string") {
         return (0, sendResponse_1.SendResponse)(res, {
             statusCode: 400,
@@ -88,7 +88,7 @@ exports.updateTask = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
     });
 }));
 exports.deleteTask = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.query;
+    const { id } = req.params;
     if (!id || typeof id !== "string") {
         return (0, sendResponse_1.SendResponse)(res, {
             statusCode: 400,

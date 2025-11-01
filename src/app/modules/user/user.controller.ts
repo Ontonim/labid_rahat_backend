@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../../utils/catchAsync";
 import { SendResponse } from "../../../utils/sendResponse";
-import { isActive, ModeratorApprovalStatus } from "./user.interface";
+import { isActive } from "./user.interface";
 import { UserService } from "./user.service";
 import AppError from "../../../helpers/AppError";
 import httpStatus from 'http-status-codes';
@@ -59,29 +59,7 @@ const getUsersByRole = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-const updateModeratorApprovalStatus = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.query.id as string;
-  const approvalStatus = req.query.status as string;
 
-  if (
-    approvalStatus !== ModeratorApprovalStatus.ACCEPTED &&
-    approvalStatus !==  ModeratorApprovalStatus.REJECTED
-  ) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid status query param");
-  }
-
-  const updatedUser = await UserService.updateModeratorApprovalStatus(
-    userId,
-    approvalStatus as ModeratorApprovalStatus
-  );
-
-  SendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `Agent ${approvalStatus}`,
-    data: updatedUser,
-  });
-});
 
 
 const updateAccountStatus = catchAsync(async (req: Request, res: Response) => {
@@ -128,13 +106,33 @@ const updateUserRole = catchAsync(async (req: Request, res: Response) => {
     data: updatedUser,
   });
 });
+const getAllLimitedMembers = catchAsync(async (req: Request, res: Response) => {
+  const members = await UserService.getAllLimitedMembers();
+  SendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Limited members fetched successfully",
+    data: members,
+  });
+});
+const deleteUser = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const deletedUser = await UserService.deleteUser(userId);
+  SendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User deleted successfully",
+    data: deletedUser,
+  });
+});
 export const userController = {
     getAllUsers,
     getSingleUser,
     getUsersByRole,
     createNewUser,
-    updateModeratorApprovalStatus,
+    getAllLimitedMembers,
     updateAccountStatus,
     updateUser,
-  updateUserRole
+  updateUserRole,
+  deleteUser
 }

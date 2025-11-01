@@ -18,7 +18,6 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const AppError_1 = __importDefault(require("../helpers/AppError"));
 const envConfig_1 = require("../config/envConfig");
 const user_model_1 = require("../app/modules/user/user.model");
-const user_interface_1 = require("../app/modules/user/user.interface");
 const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accessToken = req.headers.authorization;
@@ -30,9 +29,6 @@ const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0
         const isUserExist = yield user_model_1.User.findOne(({ email: verifiedToken.email }));
         if (!isUserExist) {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User Not Exist');
-        }
-        if (isUserExist.isActive === user_interface_1.isActive.BLOCKED || isUserExist.isActive === user_interface_1.isActive.INACTIVE) {
-            throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User is Blocked/Inactive');
         }
         if (isUserExist.isDeleted) {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User deleted');

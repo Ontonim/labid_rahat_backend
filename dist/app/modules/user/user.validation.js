@@ -47,7 +47,7 @@ exports.createUserValidation = z.object({
     picture: z.string()
         .url("Invalid image URL")
         .optional(),
-    role: z.enum([user_interface_1.Role.USER, user_interface_1.Role.ADMIN, user_interface_1.Role.MODERATOR, user_interface_1.Role.PENDING]).optional(),
+    role: z.enum([user_interface_1.Role.USER, user_interface_1.Role.ADMIN, user_interface_1.Role.MODERATOR]).optional(),
     isActive: z.enum([user_interface_1.isActive.ACTIVE, user_interface_1.isActive.INACTIVE, user_interface_1.isActive.BLOCKED]).optional(),
     isVerified: z.boolean().optional(),
 });

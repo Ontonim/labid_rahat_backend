@@ -48,8 +48,8 @@ const updateTask = async (id: string, payload: Partial<ITask>) => {
     new: true,
     runValidators: true,
   })
-    .populate("assignedBy", "name email")
-    .populate("assignedTo", "name email");
+    .populate("assignee", "name email")
+  
 
   return task;
 };
