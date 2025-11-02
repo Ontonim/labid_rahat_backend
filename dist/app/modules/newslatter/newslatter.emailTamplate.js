@@ -3,51 +3,57 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateThankYouEmail = void 0;
 const generateThankYouEmail = (recipientName) => {
     return `
-    <div style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #2c3e2f;">
-      <div style="max-width: 600px; margin: auto; padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #2f3d2e;">
+      <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; border: 1px solid #e1e8e3;">
         
-        <!-- Header with bottle green map background -->
-        <div style="background: linear-gradient(135deg, #2d5016 0%, #3a6b1f 100%); padding: 40px 30px; text-align: center; position: relative; overflow: hidden;">
-          <!-- Map-inspired circular elements -->
-          <div style="position: absolute; top: -50%; right: -10%; width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; z-index: 0;"></div>
-          <div style="position: absolute; bottom: -30%; left: -5%; width: 250px; height: 250px; background: rgba(255,255,255,0.03); border-radius: 50%; z-index: 0;"></div>
+        <!-- Header (Bottle Green + Simple Map Overlay) -->
+        <div style="background: linear-gradient(135deg, #2b4d1c 0%, #3e6b29 100%);
+                    text-align: center; padding: 40px 20px; position: relative; overflow: hidden;">
+          
+          <!-- Light Map Overlay -->
+          <div style="background-image: url('https://www.transparenttextures.com/patterns/subtle-white-feathers.png');
+                      opacity: 0.1; position: absolute; inset: 0; z-index: 0;"></div>
+
           <div style="position: relative; z-index: 1;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Thank You for Subscribing!</h1>
-            <p style="color: #c8e6c9; margin: 8px 0 0 0; font-size: 14px;">Join our community</p>
+            <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 600;">
+              Thank You for Subscribing!
+            </h1>
+            <p style="color: #c9e8d3; margin: 10px 0 0; font-size: 14px;">
+              Your journey with us starts here 🌿
+            </p>
           </div>
         </div>
 
-        <!-- Content area -->
-        <div style="padding: 40px 30px; background: #ffffff;">
-          <p style="margin: 0 0 20px 0; font-size: 16px; color: #2c3e2f;">
-            Hi <strong style="color: #2d5016;">${recipientName || "Subscriber"}</strong>,
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="font-size: 16px; margin: 0 0 15px;">
+            Hi <strong style="color: #2b4d1c;">${recipientName || "Subscriber"}</strong>,
+          </p>
+          <p style="font-size: 15px; color: #4a554a; margin: 0 0 20px;">
+            We're thrilled to have you join our community! You’ll now receive updates, insights, and stories directly to your inbox.
           </p>
 
-          <p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.7; color: #4a5568;">
-            We're excited to have you join our community! As a subscriber, you're now part of our inner circle.
-          </p>
-
-          <!-- Map-inspired section with portfolio portfolio information -->
-          <div style="margin: 30px 0; padding: 20px; background: linear-gradient(135deg, #f0f8f3 0%, #e8f4ed 100%); border-left: 4px solid #2d5016; border-radius: 6px;">
-            <p style="margin: 0; font-size: 14px; color: #2d5016; font-weight: 600;">📍 What's Next</p>
-            <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; line-height: 1.6;">
-              ✓ Explore my latest blog posts<br />
-              ✓ Get early access to updates<br />
-              ✓ Receive exclusive content
-            </p>
+          <!-- Highlight Section -->
+          <div style="background: #f2f8f3; border-left: 4px solid #2b4d1c; padding: 15px 20px; border-radius: 6px;">
+            <p style="margin: 0; font-size: 14px; color: #2b4d1c; font-weight: 600;">📍 What's Coming Next</p>
+            <ul style="margin: 10px 0 0 15px; padding: 0; color: #4a554a; font-size: 14px; line-height: 1.7;">
+              <li>Exclusive updates and resources</li>
+              <li>Early access to new projects</li>
+              <li>Community tips and insights</li>
+            </ul>
           </div>
 
-          <p style="margin: 25px 0 0 0; font-size: 15px; line-height: 1.7; color: #4a5568;">
-            Check your inbox for curated content and insights. Welcome to the journey!
+          <p style="font-size: 15px; margin: 25px 0 0; color: #4a554a;">
+            Stay tuned and enjoy being part of our journey 🌍
           </p>
         </div>
 
         <!-- Footer -->
-        <div style="background: #f5f9f7; padding: 25px 30px; border-top: 1px solid #d4e8dc; text-align: center;">
+        <div style="background: #f5faf7; text-align: center; padding: 20px; border-top: 1px solid #e0ebe3;">
           <p style="margin: 0; font-size: 12px; color: #7a8d7d;">
-            You're receiving this because you subscribed to our newsletter.
+            You’re receiving this email because you subscribed to our newsletter.
           </p>
-          <p style="margin: 10px 0 0 0; font-size: 11px; color: #9db3a2;">
+          <p style="margin: 8px 0 0; font-size: 11px; color: #9db3a2;">
             © 2025 My Portfolio. All rights reserved.
           </p>
         </div>
