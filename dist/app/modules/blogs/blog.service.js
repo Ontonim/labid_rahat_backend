@@ -13,6 +13,16 @@ exports.blogService = void 0;
 const QueryBuilder_1 = require("../../../utils/QueryBuilder");
 const comment_model_1 = require("../comment/comment.model");
 const blogs_model_1 = require("./blogs.model");
+const createBlog = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    const blog = yield blogs_model_1.Blog.create(data);
+    return blog;
+});
+const updateBlog = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
+    const blog = yield blogs_model_1.Blog.findByIdAndUpdate(id, data, { new: true });
+    if (!blog)
+        throw new Error("Blog not found");
+    return blog;
+});
 const getAllBlogs = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const builder = new QueryBuilder_1.QueryBuilder(blogs_model_1.Blog.find(), query)
         .filter()
@@ -44,4 +54,6 @@ exports.blogService = {
     getAllBlogs,
     getBlogById,
     deleteBlog,
+    createBlog,
+    updateBlog,
 };

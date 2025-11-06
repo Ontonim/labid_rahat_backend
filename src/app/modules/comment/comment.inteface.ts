@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export enum CommentStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
@@ -9,7 +11,7 @@ export interface IComment {
   name: string;
   email: string;
   comment: string;
-  blogId: string;
+  blogId: Types.ObjectId;
   status?: CommentStatus;
   approved?: boolean;
   isdeleted?: boolean;

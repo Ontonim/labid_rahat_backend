@@ -20,6 +20,9 @@ const loadEnvVariables = () => {
         "SUPER_ADMIN_EMAIL",
         "SUPER_ADMIN_PASSWORD",
         "SUPER_ADMIN_PHONE",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_API_SECRET",
+        "CLOUDINARY_CLOUD_NAME",
     ];
     requiredEnvVariables.forEach((key) => {
         if (!process.env[key]) {
@@ -39,6 +42,9 @@ const loadEnvVariables = () => {
         SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL,
         SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD,
         SUPER_ADMIN_PHONE: process.env.SUPER_ADMIN_PHONE,
+        CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+        CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+        CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
     };
 };
 exports.envVars = loadEnvVariables();

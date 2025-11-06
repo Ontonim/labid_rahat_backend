@@ -58,3 +58,17 @@ export const generateThankYouEmail = (recipientName: string) => {
     </div>
   `;
 };
+export const generateNewsletterEmail = (message: string) => {
+  return `
+    <div style="background-color: #006a4e; color: #ffffff; font-family: Arial, sans-serif; padding: 30px; border-radius: 12px;">
+      <h2 style="text-align:center;">📰 Latest Update from Labid Rahat</h2>
+      <p style="font-size: 16px; line-height: 1.6;">
+        ${message}
+      </p>
+      <p style="margin-top: 30px; font-size: 14px; text-align: center; opacity: 0.8;">
+        — Sent with 💚 from <strong>Labid Rahat</strong><br/>
+        <small>Thank you for being with us!</small>
+      </p>
+    </div>
+  `;
+};

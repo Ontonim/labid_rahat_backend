@@ -10,7 +10,7 @@ const taskSchema = new Schema(
         role: String,
       },
     ],
-    status: { type: String, enum: ["to do", "in progress", "completed", "due"], default: "to do" },
+    status: { type: String, enum: ["pending","completed"], default: "pending" },
     priority: { type: String, enum: ["Low", "Medium", "High"], default: "Medium" },
     dueDate: { type: Date },
   },

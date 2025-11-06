@@ -5,8 +5,6 @@ import AppError from "../../../helpers/AppError";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../../config/envConfig";
 import { QueryBuilder } from "../../../utils/QueryBuilder";
-import th from "zod/v4/locales/th.cjs";
-
 
 const createNewUser = async (payload: Partial<IUser> )=>{
 
@@ -28,7 +26,7 @@ const {email , password , ...rest} = payload;
         password: passwordHash,
         role: payload.role || Role.MEMBER,
         status: isActive.ACTIVE,
-        isVerified: false,
+     
         isDeleted: false,
     };
     
@@ -39,7 +37,28 @@ const {email , password , ...rest} = payload;
     
   
     return user;
-}
+};
+
+const updateUser = async (userId: string, updateData: Partial<IUser>) => {
+  if (updateData && "access" in updateData) {
+    delete updateData.access;
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Access field cannot be updated directly"
+    );
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedUser)
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+
+  return updatedUser;
+};
+
 
 const getAllUsers = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(User.find(), query)
@@ -92,23 +111,6 @@ const updateAccountStatus = async (id: string, status?: string) => {
     { isActive: normalizedStatus }, // এখানে ঠিক করা হয়েছে
     { new: true }
   );
-
-  if (!updatedUser) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  return updatedUser;
-};
- const updateUser = async (userId: string, updateData: Partial<IUser>) => {
-  if (updateData && "access" in updateData) {
-    delete updateData.access;  
-    throw new AppError(httpStatus.BAD_REQUEST, "Access field cannot be updated directly");
-  }
-
-  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-    new: true,
-    runValidators: true,
-  });
 
   if (!updatedUser) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");

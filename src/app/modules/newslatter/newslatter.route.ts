@@ -1,5 +1,6 @@
 import express from "express";
-import { subscribeNewsletter } from "./newslatter.controller";
+import { sendNewsletterUpdate, subscribeNewsletter } from "./newslatter.controller";
 const router = express.Router();
 router.post("/", subscribeNewsletter);
+router.post("/send-update", sendNewsletterUpdate); 
 export const NewsletterRoutes = router;

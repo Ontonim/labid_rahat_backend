@@ -2,6 +2,16 @@ import { QueryBuilder } from "../../../utils/QueryBuilder";
 import { Comment } from "../comment/comment.model";
 import { Blog } from "./blogs.model";
 
+const createBlog = async (data: any) => {
+  const blog = await Blog.create(data);
+  return blog;
+};
+
+const updateBlog = async (id: string, data: any) => {
+  const blog = await Blog.findByIdAndUpdate(id, data, { new: true });
+  if (!blog) throw new Error("Blog not found");
+  return blog;
+};
 
 
  const getAllBlogs = async (query: Record<string, string>) => {
@@ -38,4 +48,6 @@ export const blogService = {
   getAllBlogs,
   getBlogById,
   deleteBlog,
+  createBlog,
+  updateBlog,
 };

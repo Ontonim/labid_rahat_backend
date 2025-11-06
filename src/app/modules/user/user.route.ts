@@ -3,6 +3,7 @@ import { Router } from "express";
 import { userController } from "./user.controller";
 import { checkAuth } from "../../../middleWares/checkAuth";
 import { validateRequest } from "../../../middleWares/validateRequest";
+import { upload } from "../../../middleWares/upload";
 
 
 
@@ -11,9 +12,10 @@ const router = Router();
 
 router.post(
     "/",
+     upload.single("image"),
    checkAuth("admin"),
     userController.createNewUser
-)
+);
 router.get(
     "/",
     checkAuth("admin"),
@@ -37,12 +39,14 @@ router.get("/role/:role",
 
 router.patch(
   "/:id",
+    upload.single("image"),
   checkAuth("admin","member"),
 
   userController.updateUser
 );
 router.patch(
   "/:id/status",
+
   checkAuth("admin"),
   userController.updateAccountStatus
 );

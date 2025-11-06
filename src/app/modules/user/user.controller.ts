@@ -3,33 +3,47 @@ import { catchAsync } from "../../../utils/catchAsync";
 import { SendResponse } from "../../../utils/sendResponse";
 import { isActive } from "./user.interface";
 import { UserService } from "./user.service";
-import AppError from "../../../helpers/AppError";
-import httpStatus from 'http-status-codes';
+import httpStatus from "http-status-codes";
 
+// ✅ Create new user (with optional image upload)
+const createNewUser = catchAsync(async (req: Request, res: Response) => {
 
-const createNewUser = catchAsync(async (req,res)=>{
- const user = await UserService.createNewUser(req.body);
+ const memberData = req.body;
+ const user = await UserService.createNewUser(memberData);
 
+  SendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "User created successfully",
+    data: user,
+  });
+});
 
+// ✅ Update existing user (with new image upload if provided)
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const updateData = req.body;
+  const updatedUser = await UserService.updateUser(userId, updateData);
 
+  SendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User updated successfully",
+    data: updatedUser,
+  });
+});
 
-    SendResponse(res,{
-        statusCode: 201,
-        success: true,
-        message: "User created successfully",
-        data: user 
-    })
-})
-
+// ✅ Other controllers (unchanged)
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const { data, meta } = await UserService.getAllUsers(req.query as  Record<string, string>);
-
- SendResponse(res, {
+  const { data, meta } = await UserService.getAllUsers(
+    req.query as Record<string, string>
+  );
+  SendResponse(res, {
     statusCode: 200,
     success: true,
     message: "Users fetched successfully",
     data,
-    meta
+    meta,
   });
 });
 
@@ -44,12 +58,9 @@ const getSingleUser = catchAsync(async (req, res) => {
   });
 });
 
-
 const getUsersByRole = catchAsync(async (req: Request, res: Response) => {
   const { role } = req.params;
-
   const users = await UserService.getUsersByRole(role);
-
   SendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -58,19 +69,13 @@ const getUsersByRole = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-
-
-
 const updateAccountStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.query;
-
   const updatedUser = await UserService.updateAccountStatus(
     id,
     status as isActive
   );
-
   SendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -79,26 +84,10 @@ const updateAccountStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.params.id;  
-  const updateData = req.body;
-
-  const updatedUser = await UserService.updateUser(userId, updateData);
-
-  SendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "User updated successfully",
-    data: updatedUser,
-  });
-});
-
 const updateUserRole = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
   const { role } = req.body;
-
   const updatedUser = await UserService.updateUserRole(userId, role);
-
   SendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -106,6 +95,7 @@ const updateUserRole = catchAsync(async (req: Request, res: Response) => {
     data: updatedUser,
   });
 });
+
 const getAllLimitedMembers = catchAsync(async (req: Request, res: Response) => {
   const members = await UserService.getAllLimitedMembers();
   SendResponse(res, {
@@ -115,6 +105,7 @@ const getAllLimitedMembers = catchAsync(async (req: Request, res: Response) => {
     data: members,
   });
 });
+
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
   const deletedUser = await UserService.deleteUser(userId);
@@ -125,14 +116,15 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
     data: deletedUser,
   });
 });
+
 export const userController = {
-    getAllUsers,
-    getSingleUser,
-    getUsersByRole,
-    createNewUser,
-    getAllLimitedMembers,
-    updateAccountStatus,
-    updateUser,
+  createNewUser,
+  updateUser,
+  getAllUsers,
+  getSingleUser,
+  getUsersByRole,
+  getAllLimitedMembers,
+  updateAccountStatus,
   updateUserRole,
-  deleteUser
-}
+  deleteUser,
+};
