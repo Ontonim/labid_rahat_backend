@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMail = void 0;
+exports.sendMailToAdmin = exports.sendMailToUser = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
-const sendMail = (to, subject, html) => __awaiter(void 0, void 0, void 0, function* () {
+const sendMailToUser = (to, subject, html) => __awaiter(void 0, void 0, void 0, function* () {
     const transporter = nodemailer_1.default.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT) || 587,
@@ -31,4 +31,22 @@ const sendMail = (to, subject, html) => __awaiter(void 0, void 0, void 0, functi
         html,
     });
 });
-exports.sendMail = sendMail;
+exports.sendMailToUser = sendMailToUser;
+const sendMailToAdmin = (to, subject, html) => __awaiter(void 0, void 0, void 0, function* () {
+    const transporter = nodemailer_1.default.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: false,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        },
+    });
+    yield transporter.sendMail({
+        from: `"Website Contact" <${process.env.SMTP_USER}>`,
+        to,
+        subject,
+        html,
+    });
+});
+exports.sendMailToAdmin = sendMailToAdmin;

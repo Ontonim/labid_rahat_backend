@@ -40,9 +40,22 @@ const createNewUser = (payload) => __awaiter(void 0, void 0, void 0, function* (
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User Already Exist');
     }
     const passwordHash = yield bcryptjs_1.default.hash(password, envConfig_1.envVars.BCRYPT_SALT_ROUND);
-    const userData = Object.assign(Object.assign({}, rest), { email, password: passwordHash, role: payload.role || user_interface_1.Role.MEMBER, status: user_interface_1.isActive.ACTIVE, isVerified: false, isDeleted: false });
+    const userData = Object.assign(Object.assign({}, rest), { email, password: passwordHash, role: payload.role || user_interface_1.Role.MEMBER, status: user_interface_1.isActive.ACTIVE, isDeleted: false });
     const user = yield user_model_1.User.create(userData);
     return user;
+});
+const updateUser = (userId, updateData) => __awaiter(void 0, void 0, void 0, function* () {
+    if (updateData && "access" in updateData) {
+        delete updateData.access;
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Access field cannot be updated directly");
+    }
+    const updatedUser = yield user_model_1.User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+        runValidators: true,
+    });
+    if (!updatedUser)
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
+    return updatedUser;
 });
 const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const queryBuilder = new QueryBuilder_1.QueryBuilder(user_model_1.User.find(), query)
@@ -78,20 +91,6 @@ const updateAccountStatus = (id, status) => __awaiter(void 0, void 0, void 0, fu
     }
     const updatedUser = yield user_model_1.User.findByIdAndUpdate(id, { isActive: normalizedStatus }, // এখানে ঠিক করা হয়েছে
     { new: true });
-    if (!updatedUser) {
-        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
-    }
-    return updatedUser;
-});
-const updateUser = (userId, updateData) => __awaiter(void 0, void 0, void 0, function* () {
-    if (updateData && "access" in updateData) {
-        delete updateData.access;
-        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Access field cannot be updated directly");
-    }
-    const updatedUser = yield user_model_1.User.findByIdAndUpdate(userId, updateData, {
-        new: true,
-        runValidators: true,
-    });
     if (!updatedUser) {
         throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
     }

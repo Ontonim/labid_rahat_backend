@@ -13,6 +13,31 @@ exports.BlogsController = void 0;
 const blog_service_1 = require("./blog.service");
 const sendResponse_1 = require("../../../utils/sendResponse");
 const catchAsync_1 = require("../../../utils/catchAsync");
+const createBlogController = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const blogData = req.body;
+    const newBlog = yield blog_service_1.blogService.createBlog(blogData);
+    return (0, sendResponse_1.SendResponse)(res, {
+        statusCode: 201,
+        success: true,
+        message: "Blog created successfully",
+        data: newBlog,
+    });
+}));
+/**
+ * PATCH /api/blogs/:id
+ * Update blog (text + image)
+ */
+const updateBlogController = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const blogData = req.body;
+    const updatedBlog = yield blog_service_1.blogService.updateBlog(id, blogData);
+    return (0, sendResponse_1.SendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Blog updated successfully",
+        data: updatedBlog,
+    });
+}));
 /**
  * GET /api/blogs
  */
@@ -71,4 +96,6 @@ exports.BlogsController = {
     getAllBlogsController,
     getBlogByIdController,
     deleteBlogController,
+    createBlogController,
+    updateBlogController,
 };

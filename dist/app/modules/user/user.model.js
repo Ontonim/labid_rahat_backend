@@ -15,6 +15,6 @@ const userSchema = new mongoose_1.Schema({
     mobile: { type: String },
     status: { type: String, enum: Object.values(user_interface_1.isActive), default: user_interface_1.isActive.ACTIVE },
     isDeleted: { type: Boolean, default: false },
-    isVerified: { type: Boolean, default: false },
+    isVerified: { type: Boolean, optional: true },
 }, { timestamps: true });
 exports.User = (0, mongoose_1.model)("User", userSchema);

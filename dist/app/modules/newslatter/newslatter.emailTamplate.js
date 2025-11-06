@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateThankYouEmail = void 0;
+exports.generateNewsletterEmail = exports.generateThankYouEmail = void 0;
 const generateThankYouEmail = (recipientName) => {
     return `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #2f3d2e;">
@@ -62,3 +62,18 @@ const generateThankYouEmail = (recipientName) => {
   `;
 };
 exports.generateThankYouEmail = generateThankYouEmail;
+const generateNewsletterEmail = (message) => {
+    return `
+    <div style="background-color: #006a4e; color: #ffffff; font-family: Arial, sans-serif; padding: 30px; border-radius: 12px;">
+      <h2 style="text-align:center;">📰 Latest Update from Labid Rahat</h2>
+      <p style="font-size: 16px; line-height: 1.6;">
+        ${message}
+      </p>
+      <p style="margin-top: 30px; font-size: 14px; text-align: center; opacity: 0.8;">
+        — Sent with 💚 from <strong>Labid Rahat</strong><br/>
+        <small>Thank you for being with us!</small>
+      </p>
+    </div>
+  `;
+};
+exports.generateNewsletterEmail = generateNewsletterEmail;

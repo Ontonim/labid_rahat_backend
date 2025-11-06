@@ -2,6 +2,36 @@ import { Request, Response } from "express";
 import { blogService } from "./blog.service";
 import { SendResponse } from "../../../utils/sendResponse";
 import { catchAsync } from "../../../utils/catchAsync";
+import { uploadToCloudinary } from "../../../utils/uploadToCloudinary";
+
+const createBlogController = catchAsync(async (req: Request, res: Response) => {
+ const blogData = req.body;
+ const newBlog = await blogService.createBlog(blogData);
+
+  return SendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "Blog created successfully",
+    data: newBlog,
+  });
+});
+
+/**
+ * PATCH /api/blogs/:id
+ * Update blog (text + image)
+ */
+const updateBlogController = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const blogData = req.body;  
+  const updatedBlog = await blogService.updateBlog(id, blogData);
+
+  return SendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Blog updated successfully",
+    data: updatedBlog,
+  });
+});
 
 
 /**
@@ -62,4 +92,6 @@ export const BlogsController = {
   getAllBlogsController,
   getBlogByIdController,
   deleteBlogController,
+  createBlogController,
+  updateBlogController,
 };

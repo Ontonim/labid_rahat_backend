@@ -14,7 +14,7 @@ const userSchema = new Schema<IUser>(
     mobile: { type: String },
     status: { type: String, enum: Object.values(isActive), default: isActive.ACTIVE },
     isDeleted: { type: Boolean, default: false },
-    isVerified: { type: Boolean, default: false },
+    isVerified: { type: Boolean, optional: true },
   },
   { timestamps: true }
 );

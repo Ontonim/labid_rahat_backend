@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import { TaskService } from "./task.service";
 import { catchAsync } from "../../../utils/catchAsync";
 import { SendResponse } from "../../../utils/sendResponse";
-import { User } from "../user/user.model";
-import { sendMail } from "../../../utils/nodeMailer";
+
 
 // POST - Create Task
 
