@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadToCloudinary = void 0;
 const cloudinary_1 = require("cloudinary");
 const envConfig_1 = require("../config/envConfig");
-// Configure Cloudinary
 cloudinary_1.v2.config({
     cloud_name: envConfig_1.envVars.CLOUDINARY_CLOUD_NAME,
     api_key: envConfig_1.envVars.CLOUDINARY_API_KEY,

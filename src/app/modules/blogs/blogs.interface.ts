@@ -13,10 +13,10 @@ export interface IBlog {
   source?: string;
   image?: string;
   readTime?: string;
-  date: Date;
+  date?: Date;
   status: TBlogStatus;
-  author: string;
+  author?: string;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

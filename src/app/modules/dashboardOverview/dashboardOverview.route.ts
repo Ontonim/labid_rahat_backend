@@ -1,7 +1,8 @@
 import express from "express";
 import { dashboardController } from "./dashboardOverview.controller";
+import { checkAuth } from "../../../middleWares/checkAuth";
 const router = express.Router();
 
-router.get("/", dashboardController.getDashboardOverview);
+router.get("/", checkAuth("admin"), dashboardController.getDashboardOverview);
 
-export const DashboardRoutes = router;
+export const DashboardOverviewRoutes = router;

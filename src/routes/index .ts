@@ -9,7 +9,7 @@ import { CommentRoutes } from "../app/modules/comment/comment.route"
 import { BlogRoutes } from "../app/modules/blogs/blog.route"
 import { NewsletterRoutes } from "../app/modules/newslatter/newslatter.route"
 import { ContactRoutes } from "../app/modules/contactMessage/contactMessage.route"
-import { DashboardRoutes } from "../app/modules/dashboardOverview/dashboardOverview.route"
+import { DashboardOverviewRoutes} from "../app/modules/dashboardOverview/dashboardOverview.route"
 
 
 export const router = Router()
@@ -57,7 +57,7 @@ const moduleRoutes = [
     },
     {
         path: "/dashboard-overview",
-        route: DashboardRoutes
+        route: DashboardOverviewRoutes
     }
 ]
 
