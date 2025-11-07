@@ -57,7 +57,7 @@ const moduleRoutes = [
     },
     {
         path: "/dashboard-overview",
-        route: dashboardOverview_route_1.DashboardRoutes
+        route: dashboardOverview_route_1.DashboardOverviewRoutes
     }
 ];
 moduleRoutes.forEach((route) => {

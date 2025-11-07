@@ -7,7 +7,6 @@ const commentSchema = new Schema<IComment>(
     email: { type: String, required: true },
     comment: { type: String, required: true },
 
-    // ✅ TypeScript-safe ObjectId reference
     blogId: {
       type: Schema.Types.ObjectId, 
       ref: "Blog",
