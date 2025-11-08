@@ -17,6 +17,7 @@ const {email , password , ...rest} = payload;
     if(isUserExists){
         throw new AppError(httpStatus.BAD_REQUEST,'User Already Exist');
     }
+    
 
     const  passwordHash = await bcrypt.hash(password as string,envVars.BCRYPT_SALT_ROUND);
 
@@ -61,9 +62,12 @@ const updateUser = async (userId: string, updateData: Partial<IUser>) => {
 
 
 const getAllUsers = async (query: Record<string, string>) => {
-  const queryBuilder = new QueryBuilder(User.find(), query)
+  const queryBuilder = new QueryBuilder(
+    User.find({ isDeleted: false }),
+    query
+  )
     .filter()
-    .search(["name"]) 
+    .search(["name"])
     .sort()
     .paginate();
 
@@ -73,8 +77,9 @@ const getAllUsers = async (query: Record<string, string>) => {
   return { data, meta };
 };
 
+
 const getSingleUser = async (userId: string) => {
-  const user = await User.findById(userId)
+  const user = await User.findOne({ _id: userId, isDeleted: false }); 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -87,10 +92,10 @@ const getUsersByRole = async (role: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid role");
   }
 
-  const users = await User.find({ role });
-
+  const users = await User.find({ role, isDeleted: false }); 
   return users;
 };
+
 
 
 
@@ -139,9 +144,11 @@ const updateUserRole = async (userId: string, newRole: Role) => {
   return updatedUser;
 };
 const getAllLimitedMembers = async () => {
-  const members = await User.find({ access: Role.MEMBER }).select("name  role bio expertise image ");
+  const members = await User.find({ access: Role.MEMBER, isDeleted: false }) 
+    .select("name role bio expertise image");
   return members;
-}
+};
+
 const deleteUser = async (userId: string) => {
   const user = await User.findById(userId)
   if (!user) {
