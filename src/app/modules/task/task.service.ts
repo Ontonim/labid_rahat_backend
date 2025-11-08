@@ -1,98 +1,120 @@
 import { Task } from "./task.model";
 import { ITask } from "./task.interface";
+import { User } from "../user/user.model"; // user collection import
 import { sendMailToUser } from "../../../utils/nodeMailer";
 
-type Assignee = {
-  name: string;
-  email: string;
-  role: string;
-};
 const createTask = async (payload: ITask) => {
   const { assignee, ...rest } = payload;
 
-  // Assignee validation
   if (!assignee || !Array.isArray(assignee) || assignee.length === 0) {
     throw new Error("Assignee emails are required.");
   }
 
-  // Save task in DB
-  const taskData = {
+  const task = await Task.create({
     ...rest,
-    assignee: assignee,
-  };
+    assignee,
+  });
 
-  const task = await Task.create(taskData);
+  const populatedAssignee = await Promise.all(
+    task.assignee.map(async (a) => {
+      const user = await User.findOne({ email: a.email }).select("name email role");
+      return {
+        email: a.email,
+        name: user?.name || "N/A",
+        role: user?.role || "N/A",
+      };
+    })
+  );
 
-  // Extract emails from assignee objects
-  const assigneeEmails: string[] = assignee.map((a: Assignee) => a.email);
-
-  // Send bottle green themed email to each assignee
-  for (const email of assigneeEmails) {
+  for (const a of populatedAssignee) {
     const html = `
-    <div style="font-family: 'Segoe UI', sans-serif; background-color: #f4f9f6; padding: 30px;">
-      <div style="max-width: 600px; margin: auto; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #004d40, #006a4e); color: white; text-align: center; padding: 25px;">
-          <h2 style="margin: 0;">🗂️ New Task Assigned</h2>
-        </div>
-        <div style="padding: 25px; color: #1f2937;">
-          <p style="font-size: 16px;">Hello,</p>
-          <p style="font-size: 15px;">You have been assigned a new task. Here are the details:</p>
-
-          <div style="margin-top: 15px; background: #f3f4f6; padding: 15px; border-radius: 8px;">
-            <p><strong>Title:</strong> ${task.title}</p>
-            <p><strong>Description:</strong> ${task.description || "No description provided."}</p>
-            <p><strong>Status:</strong> ${task.status}</p>
-            <p><strong>Priority:</strong> ${task.priority}</p>
-            ${
-              task.dueDate
-                ? `<p><strong>Due Date:</strong> ${new Date(task.dueDate).toLocaleDateString()}</p>`
-                : ""
-            }
-          </div>
-
-          <p style="margin-top: 25px; font-size: 14px; color: #374151;">
-            Please check your dashboard for more details.
-          </p>
-
-           
-
-          <p style="font-size: 12px; color: #6b7280; margin-top: 30px; text-align: center;">
-            Sent automatically by Task Management System — ${new Date().toLocaleString()}
-          </p>
-        </div>
+      <div style="font-family: sans-serif; background: #f4f9f6; padding: 20px;">
+        <h2>🗂️ New Task Assigned</h2>
+        <p>Hello ${a.name || "User"},</p>
+        <p>You have been assigned a new task: <strong>${task.title}</strong></p>
+        <p>Status: ${task.status}</p>
+        <p>Priority: ${task.priority}</p>
       </div>
-    </div>`;
-
-    await sendMailToUser(email, `🗂️ New Task Assigned: ${task.title}`, html);
+    `;
+    await sendMailToUser(a.email as string, `🗂️ New Task Assigned: ${task.title}`, html);
   }
 
-  return task;
+  return {
+    ...task.toObject(),
+    assignee: populatedAssignee,
+  };
 };
 
-// Get all Tasks
 const getAllTasks = async () => {
-  const tasks = await Task.find()
+  const tasks = await Task.find();
 
-  return tasks;
+  const populatedTasks = await Promise.all(
+    tasks.map(async (task) => {
+      const populatedAssignee = await Promise.all(
+        task.assignee.map(async (a) => {
+          const user = await User.findOne({ email: a.email }).select("name email role");
+          return {
+            email: a.email,
+            name: user?.name || "N/A",
+            role: user?.role || "N/A",
+          };
+        })
+      );
+      return {
+        ...task.toObject(),
+        assignee: populatedAssignee,
+      };
+    })
+  );
+
+  return populatedTasks;
 };
 
-// Get single Task by id
 const getTaskById = async (id: string) => {
-  const task = await Task.findById(id)
-  return task;
+  const task = await Task.findById(id);
+  if (!task) throw new Error("Task not found");
+
+  const populatedAssignee = await Promise.all(
+    task.assignee.map(async (a) => {
+      const user = await User.findOne({ email: a.email }).select("name email role");
+      return {
+        email: a.email,
+        name: user?.name || "N/A",
+        role: user?.role || "N/A",
+      };
+    })
+  );
+
+  return {
+    ...task.toObject(),
+    assignee: populatedAssignee,
+  };
 };
 
-// Update Task by id
+// ✅ Update Task
 const updateTask = async (id: string, payload: Partial<ITask>) => {
-  const task = await Task.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
-  })
-    .populate("assignee", "name email")
-  
+  const task = await Task.findByIdAndUpdate(id, payload, { new: true });
+  if (!task) throw new Error("Task not found");
 
-  return task;
+  // Populate again after update
+  const populatedAssignee = await Promise.all(
+    task.assignee.map(async (a) => {
+      const user = await User.findOne({ email: a.email }).select("name email role");
+      return {
+        email: a.email,
+        name: user?.name || "N/A",
+        role: user?.role || "N/A",
+      };
+    })
+  );
+
+  return {
+    ...task.toObject(),
+    assignee: populatedAssignee,
+  };
 };
+
+// ✅ Delete Task
 const deleteTask = async (id: string) => {
   const task = await Task.findByIdAndDelete(id);
   if (!task) {
@@ -100,6 +122,7 @@ const deleteTask = async (id: string) => {
   }
   return task;
 };
+
 export const TaskService = {
   createTask,
   getAllTasks,

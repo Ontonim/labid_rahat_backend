@@ -58,7 +58,7 @@ const updateUser = (userId, updateData) => __awaiter(void 0, void 0, void 0, fun
     return updatedUser;
 });
 const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const queryBuilder = new QueryBuilder_1.QueryBuilder(user_model_1.User.find(), query)
+    const queryBuilder = new QueryBuilder_1.QueryBuilder(user_model_1.User.find({ isDeleted: false }), query)
         .filter()
         .search(["name"])
         .sort()
@@ -68,7 +68,7 @@ const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
     return { data, meta };
 });
 const getSingleUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findById(userId);
+    const user = yield user_model_1.User.findOne({ _id: userId, isDeleted: false });
     if (!user) {
         throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
     }
@@ -78,7 +78,7 @@ const getUsersByRole = (role) => __awaiter(void 0, void 0, void 0, function* () 
     if (!Object.values(user_interface_1.Role).includes(role)) {
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Invalid role");
     }
-    const users = yield user_model_1.User.find({ role });
+    const users = yield user_model_1.User.find({ role, isDeleted: false });
     return users;
 });
 const updateAccountStatus = (id, status) => __awaiter(void 0, void 0, void 0, function* () {
@@ -107,7 +107,8 @@ const updateUserRole = (userId, newRole) => __awaiter(void 0, void 0, void 0, fu
     return updatedUser;
 });
 const getAllLimitedMembers = () => __awaiter(void 0, void 0, void 0, function* () {
-    const members = yield user_model_1.User.find({ access: user_interface_1.Role.MEMBER }).select("name  role bio expertise image ");
+    const members = yield user_model_1.User.find({ access: user_interface_1.Role.MEMBER, isDeleted: false })
+        .select("name role bio expertise image");
     return members;
 });
 const deleteUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
