@@ -5,9 +5,7 @@ const taskSchema = new Schema(
     description: { type: String },
     assignee: [
       {
-        name: String,
         email: String,
-        role: String,
       },
     ],
     status: { type: String, enum: ["pending","completed"], default: "pending" },
