@@ -9,6 +9,7 @@ const router = (0, express_1.Router)();
 router.post("/", upload_1.upload.single("image"), (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.createNewUser);
 router.get("/", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.getAllUsers);
 router.get("/public", user_controller_1.userController.getAllLimitedMembers);
+router.get("/emails", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.getAllMemberEamil);
 router.get("/:id", (0, checkAuth_1.checkAuth)("admin", "user", "member"), user_controller_1.userController.getSingleUser);
 router.get("/role/:role", (0, checkAuth_1.checkAuth)("admin"), user_controller_1.userController.getUsersByRole);
 router.patch("/:id", upload_1.upload.single("image"), (0, checkAuth_1.checkAuth)("admin", "member"), user_controller_1.userController.updateUser);

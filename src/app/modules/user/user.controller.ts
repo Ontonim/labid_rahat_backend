@@ -46,6 +46,15 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
     meta,
   });
 });
+const getAllMemberEamil = catchAsync(async (req: Request, res: Response) => {
+  const emails = await UserService.getAllMemberEamil();
+  SendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Member emails fetched successfully",
+    data: emails,
+  });
+});
 
 const getSingleUser = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -127,4 +136,5 @@ export const userController = {
   updateAccountStatus,
   updateUserRole,
   deleteUser,
+  getAllMemberEamil
 };
