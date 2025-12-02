@@ -5,7 +5,6 @@ import httpStatus from "http-status-codes"
 import AppError from "../helpers/AppError";
 import { envVars } from "../config/envConfig";
 import { User } from "../app/modules/user/user.model";
-import { isActive } from "../app/modules/user/user.interface";
 
 export const checkAuth = (...authRoles:string[])=>  async(req:Request,res:Response,next:NextFunction)=>{
         try {
@@ -22,10 +21,7 @@ export const checkAuth = (...authRoles:string[])=>  async(req:Request,res:Respon
         throw new AppError(httpStatus.BAD_REQUEST,'User Not Exist')
     }
 
-    if (isUserExist.isActive === isActive.BLOCKED || isUserExist.isActive === isActive.INACTIVE) {
-
-                throw new AppError(httpStatus.BAD_REQUEST,'User is Blocked/Inactive')
-    }
+   
     if (isUserExist.isDeleted) {
                 throw new AppError(httpStatus.BAD_REQUEST,'User deleted')
         
@@ -37,7 +33,7 @@ export const checkAuth = (...authRoles:string[])=>  async(req:Request,res:Respon
               }
 
         if (
-            (!authRoles.includes(verifiedToken.role) )){
+            (!authRoles.includes(verifiedToken.access) )){
             throw new AppError(403, "you are not permitted");
         }
             // console.log(verifiedToken);

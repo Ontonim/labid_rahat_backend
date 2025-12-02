@@ -19,9 +19,7 @@ const  loginUser = async (email: string, password: string) => {
       throw new AppError(httpStatus.FORBIDDEN, "User is deleted");
     }
 
-    if (user.isActive === isActive.BLOCKED) {
-      throw new AppError(httpStatus.FORBIDDEN, "User is blocked");
-    }
+  
 
     const isPasswordMatched = await bcryptjs.compare(password, user.password || "");
     if (!isPasswordMatched) {
@@ -49,7 +47,7 @@ const resetPassword = async (email: string, newPassword: string) => {
 
   if (!user) throw new AppError(httpStatus.NOT_FOUND, "User not found");
   if (user.isDeleted) throw new AppError(httpStatus.FORBIDDEN, "User is deleted");
-  if (user.isActive === isActive.BLOCKED) throw new AppError(httpStatus.FORBIDDEN, "User is blocked");
+
 
   const hashedPassword = await bcryptjs.hash(newPassword, envVars.BCRYPT_SALT_ROUND);
   user.password = hashedPassword;

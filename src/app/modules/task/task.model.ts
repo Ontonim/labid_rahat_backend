@@ -1,20 +1,29 @@
 import { Schema, model } from "mongoose";
-import { ITask, TaskStatus, TaskPriority } from "./task.interface";
 
-const taskSchema = new Schema<ITask>(
+const taskSchema = new Schema(
   {
     title: { type: String, required: true },
-    description: { type: String, required: true },
-    assignedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    status: { type: String, enum: Object.values(TaskStatus), default: TaskStatus.PENDING },
-    priority: { type: String, enum: Object.values(TaskPriority), default: TaskPriority.MEDIUM },
+    description: { type: String },
+    assignee: [
+      {
+        name: { type: String, required: false },
+        email: { type: String, required: true },
+        role: { type: String, required: false },
+      },
+    ],
+    status: {
+      type: String,
+      enum: ["to do", "in progress", "completed"],
+      default: "to do",
+    },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high", "urgent"],
+      default: "medium",
+    },
     dueDate: { type: Date },
-    attachments: [{ type: String }],
-    completedAt: { type: Date },
-    notes: { type: String },
   },
   { timestamps: true }
 );
 
-export const Task = model<ITask>("Task", taskSchema);
+export const Task = model("Task", taskSchema);
