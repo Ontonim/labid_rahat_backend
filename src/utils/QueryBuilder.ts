@@ -10,15 +10,17 @@ export class QueryBuilder<T> {
     this.query = query;
   }
 
-  // Filter: category, status, author, etc.
   filter(): this {
-    const filter: Record<string, any> = { ...this.query };
-    const excludedFields = ["searchTerm", "searchTerms", "sort", "fields", "page", "limit"];
-    excludedFields.forEach(field => delete filter[field]);
+  const filter: Record<string, any> = { ...this.query };
+  const excludedFields = ["email", "searchTerm", "searchTerms", "sort", "fields", "page", "limit"]; // ✅ email add করুন
+  excludedFields.forEach(field => delete filter[field]);
 
-    this.modelQuery = this.modelQuery.find(filter);
-    return this;
-  }
+  console.log('🔍 Existing filter:', this.modelQuery.getFilter());
+  console.log('🔍 Query filter after exclusion:', filter);
+
+  this.modelQuery = this.modelQuery.find(filter);
+  return this;
+}
 
   // Search: safe search using RegExp
   search(searchableFields: string[]): this {

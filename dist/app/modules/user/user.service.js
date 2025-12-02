@@ -67,6 +67,10 @@ const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const meta = yield queryBuilder.getMeta();
     return { data, meta };
 });
+const getAllMemberEamil = () => __awaiter(void 0, void 0, void 0, function* () {
+    const members = yield user_model_1.User.find({ access: user_interface_1.Role.MEMBER, isDeleted: false }).select("email");
+    return members.map(member => member.email);
+});
 const getSingleUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findOne({ _id: userId, isDeleted: false });
     if (!user) {
@@ -128,5 +132,6 @@ exports.UserService = {
     updateAccountStatus,
     updateUser,
     updateUserRole,
-    deleteUser
+    deleteUser,
+    getAllMemberEamil
 };

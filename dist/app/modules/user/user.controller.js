@@ -51,6 +51,15 @@ const getAllUsers = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0,
         meta,
     });
 }));
+const getAllMemberEamil = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const emails = yield user_service_1.UserService.getAllMemberEamil();
+    (0, sendResponse_1.SendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Member emails fetched successfully",
+        data: emails,
+    });
+}));
 const getSingleUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const user = yield user_service_1.UserService.getSingleUser(id);
@@ -122,4 +131,5 @@ exports.userController = {
     updateAccountStatus,
     updateUserRole,
     deleteUser,
+    getAllMemberEamil
 };

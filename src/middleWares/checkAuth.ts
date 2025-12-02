@@ -5,7 +5,6 @@ import httpStatus from "http-status-codes"
 import AppError from "../helpers/AppError";
 import { envVars } from "../config/envConfig";
 import { User } from "../app/modules/user/user.model";
-import { isActive } from "../app/modules/user/user.interface";
 
 export const checkAuth = (...authRoles:string[])=>  async(req:Request,res:Response,next:NextFunction)=>{
         try {
@@ -34,7 +33,7 @@ export const checkAuth = (...authRoles:string[])=>  async(req:Request,res:Respon
               }
 
         if (
-            (!authRoles.includes(verifiedToken.role) )){
+            (!authRoles.includes(verifiedToken.access) )){
             throw new AppError(403, "you are not permitted");
         }
             // console.log(verifiedToken);

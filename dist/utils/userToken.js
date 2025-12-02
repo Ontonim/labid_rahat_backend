@@ -22,7 +22,7 @@ const createUserTokens = (user) => {
     const jwtPayload = {
         userId: user._id,
         email: user.email,
-        role: user.role
+        access: user.access
     };
     const accessToken = (0, jwt_1.generateToken)(jwtPayload, envConfig_1.envVars.JWT_ACCESS_SECRET, envConfig_1.envVars.JWT_ACCESS_EXPIRES);
     const refreshToken = (0, jwt_1.generateToken)(jwtPayload, envConfig_1.envVars.JWT_REFRESH_SECRET, envConfig_1.envVars.JWT_REFRESH_SECRET_EXPIRED);
@@ -48,7 +48,7 @@ const createNewAccessTokenWithRefreshToken = (refreshToken) => __awaiter(void 0,
     const jwtPayload = {
         userId: isUserExist._id,
         email: isUserExist.email,
-        role: isUserExist.role,
+        access: isUserExist.access,
     };
     const accessToken = (0, jwt_1.generateToken)(jwtPayload, envConfig_1.envVars.JWT_ACCESS_SECRET, envConfig_1.envVars.JWT_ACCESS_EXPIRES);
     return {
