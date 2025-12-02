@@ -22,7 +22,7 @@ export const videoSchema = z.object({
 
 
 export const updateVideoValidation = z.object({
-  body: z.object({
+
     title: z.string().min(1, "Title is required").optional(),
     description: z.string().optional(),
     youtubeLink: z.string().url("Must be a valid YouTube link").optional(),
@@ -39,5 +39,4 @@ export const updateVideoValidation = z.object({
         })
       )
       .optional(),
-  }),
-});
+  })
