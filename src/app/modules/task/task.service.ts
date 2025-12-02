@@ -1,12 +1,14 @@
 import { Task } from "./task.model";
-import { ITask } from "./task.interface";
+import { ITask, Assignee } from "./task.interface";
 import { User } from "../user/user.model"; // user collection import
 import { sendMailToUser } from "../../../utils/nodeMailer";
+import { QueryBuilder } from "../../../utils/QueryBuilder";
 
+// ✅ Create Task
 const createTask = async (payload: ITask) => {
   const { assignee, ...rest } = payload;
 
-  if (!assignee || !Array.isArray(assignee) || assignee.length === 0) {
+  if (!assignee || assignee.length === 0) {
     throw new Error("Assignee emails are required.");
   }
 
@@ -15,13 +17,13 @@ const createTask = async (payload: ITask) => {
     assignee,
   });
 
-  const populatedAssignee = await Promise.all(
-    task.assignee.map(async (a) => {
+  const populatedAssignee: (Assignee & { image?: string })[] = await Promise.all(
+    task.assignee.map(async (a: { email: string; name?: string | null; role?: string | null }) => {
       const user = await User.findOne({ email: a.email }).select("name email role");
       return {
         email: a.email,
-        name: user?.name || "N/A",
-        role: user?.role || "N/A",
+        name: user?.name || a.name || "N/A",
+        role: user?.role || a.role || "N/A",
       };
     })
   );
@@ -30,13 +32,13 @@ const createTask = async (payload: ITask) => {
     const html = `
       <div style="font-family: sans-serif; background: #f4f9f6; padding: 20px;">
         <h2>🗂️ New Task Assigned</h2>
-        <p>Hello ${a.name || "User"},</p>
+        <p>Hello ${a.name},</p>
         <p>You have been assigned a new task: <strong>${task.title}</strong></p>
         <p>Status: ${task.status}</p>
         <p>Priority: ${task.priority}</p>
       </div>
     `;
-    await sendMailToUser(a.email as string, `🗂️ New Task Assigned: ${task.title}`, html);
+    await sendMailToUser(a.email, `🗂️ New Task Assigned: ${task.title}`, html);
   }
 
   return {
@@ -45,18 +47,20 @@ const createTask = async (payload: ITask) => {
   };
 };
 
+// ✅ Get all tasks
 const getAllTasks = async () => {
   const tasks = await Task.find();
 
   const populatedTasks = await Promise.all(
     tasks.map(async (task) => {
-      const populatedAssignee = await Promise.all(
-        task.assignee.map(async (a) => {
-          const user = await User.findOne({ email: a.email }).select("name email role");
+      const populatedAssignee: (Assignee & { image?: string })[] = await Promise.all(
+        task.assignee.map(async (a: { email: string; name?: string | null; role?: string | null }) => {
+          const user = await User.findOne({ email: a.email }).select("name email role image");
           return {
             email: a.email,
-            name: user?.name || "N/A",
-            role: user?.role || "N/A",
+            name: user?.name || a.name || "N/A",
+            role: user?.role || a.role || "N/A",
+            image: user?.image || "N/A",
           };
         })
       );
@@ -70,17 +74,19 @@ const getAllTasks = async () => {
   return populatedTasks;
 };
 
+// ✅ Get task by ID
 const getTaskById = async (id: string) => {
   const task = await Task.findById(id);
   if (!task) throw new Error("Task not found");
 
-  const populatedAssignee = await Promise.all(
-    task.assignee.map(async (a) => {
-      const user = await User.findOne({ email: a.email }).select("name email role");
+  const populatedAssignee: (Assignee & { image?: string })[] = await Promise.all(
+    task.assignee.map(async (a: { email: string; name?: string | null; role?: string | null }) => {
+      const user = await User.findOne({ email: a.email }).select("name email role image");
       return {
         email: a.email,
-        name: user?.name || "N/A",
-        role: user?.role || "N/A",
+        name: user?.name || a.name || "N/A",
+        role: user?.role || a.role || "N/A",
+        image: user?.image || "N/A",
       };
     })
   );
@@ -96,14 +102,14 @@ const updateTask = async (id: string, payload: Partial<ITask>) => {
   const task = await Task.findByIdAndUpdate(id, payload, { new: true });
   if (!task) throw new Error("Task not found");
 
-  // Populate again after update
-  const populatedAssignee = await Promise.all(
-    task.assignee.map(async (a) => {
-      const user = await User.findOne({ email: a.email }).select("name email role");
+  const populatedAssignee: (Assignee & { image?: string })[] = await Promise.all(
+    task.assignee.map(async (a: { email: string; name?: string | null; role?: string | null }) => {
+      const user = await User.findOne({ email: a.email }).select("name email role image");
       return {
         email: a.email,
-        name: user?.name || "N/A",
-        role: user?.role || "N/A",
+        name: user?.name || a.name || "N/A",
+        role: user?.role || a.role || "N/A",
+        image: user?.image || "N/A",
       };
     })
   );
@@ -117,10 +123,47 @@ const updateTask = async (id: string, payload: Partial<ITask>) => {
 // ✅ Delete Task
 const deleteTask = async (id: string) => {
   const task = await Task.findByIdAndDelete(id);
-  if (!task) {
-    throw new Error("Task not found or already deleted.");
-  }
+  if (!task) throw new Error("Task not found or already deleted.");
   return task;
+};
+
+// ✅ Get tasks by assignee email
+const getTasksByAssignee = async (email: string, query: Record<string, any>) => {
+  const baseQuery = { "assignee.email": email };
+  const qb = new QueryBuilder(Task.find(baseQuery), query)
+    .search(["title", "description"])
+    .filter()
+    .sort()
+    .paginate();
+
+  const tasks = await qb.build();
+
+  // Populate assignees
+  const populatedTasks = await Promise.all(
+    tasks.map(async (task) => {
+      const populatedAssignee: (Assignee & { image?: string })[] = await Promise.all(
+        task.assignee.map(async (a: { email: string; name?: string | null; role?: string | null }) => {
+          const user = await User.findOne({ email: a.email }).select("name email role image");
+          return {
+            email: a.email,
+            name: user?.name || a.name || "N/A",
+            role: user?.role || a.role || "N/A",
+            image: user?.image || "N/A",
+          };
+        })
+      );
+      return { ...task.toObject(), assignee: populatedAssignee };
+    })
+  );
+
+  const totalDocuments = await Task.countDocuments(baseQuery);
+  const page = query.page ? parseInt(query.page) : 1;
+  const limit = query.limit ? parseInt(query.limit) : 10;
+  const totalPages = Math.ceil(totalDocuments / limit);
+
+  const meta = { total: totalDocuments, page, limit, totalPages };
+
+  return { meta, data: populatedTasks };
 };
 
 export const TaskService = {
@@ -129,4 +172,5 @@ export const TaskService = {
   getTaskById,
   updateTask,
   deleteTask,
+  getTasksByAssignee,
 };

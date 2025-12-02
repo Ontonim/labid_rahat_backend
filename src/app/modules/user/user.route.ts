@@ -28,6 +28,13 @@ router.get(
     userController.getAllLimitedMembers
 );
 
+
+router.get(
+    "/emails",
+    checkAuth("admin"),
+    userController.getAllMemberEamil
+);
+
 router.get(
     "/:id",
     checkAuth("admin","user","member"),

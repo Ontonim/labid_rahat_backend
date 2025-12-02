@@ -76,6 +76,10 @@ const getAllUsers = async (query: Record<string, string>) => {
 
   return { data, meta };
 };
+const getAllMemberEamil = async () => {
+  const members = await User.find({ access: Role.MEMBER, isDeleted: false }).select("email");
+  return members.map(member => member.email);
+}
 
 
 const getSingleUser = async (userId: string) => {
@@ -171,5 +175,6 @@ export const UserService = {
   updateAccountStatus,
   updateUser,
   updateUserRole,
-  deleteUser
+  deleteUser,
+  getAllMemberEamil
 }

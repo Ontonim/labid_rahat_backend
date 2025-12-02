@@ -37,7 +37,7 @@ const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0
         if (!verifiedToken) {
             throw new AppError_1.default(403, "You are not authorized");
         }
-        if ((!authRoles.includes(verifiedToken.role))) {
+        if ((!authRoles.includes(verifiedToken.access))) {
             throw new AppError_1.default(403, "you are not permitted");
         }
         // console.log(verifiedToken);

@@ -10,7 +10,7 @@ export const createUserTokens = (user:Partial<IUser>)=>{
     const jwtPayload = {
             userId: user._id,
             email: user.email,
-            role: user.role
+            access: user.access
         }
         const accessToken = generateToken(jwtPayload,envVars.JWT_ACCESS_SECRET,envVars.JWT_ACCESS_EXPIRES)
 
@@ -47,7 +47,7 @@ export const createNewAccessTokenWithRefreshToken = async (refreshToken: string)
   const jwtPayload = {
     userId: isUserExist._id,
     email: isUserExist.email,
-    role: isUserExist.role,
+    access: isUserExist.access,
   };
 
   const accessToken = generateToken(

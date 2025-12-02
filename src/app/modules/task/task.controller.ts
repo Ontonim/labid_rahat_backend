@@ -116,3 +116,24 @@ export const deleteTask = catchAsync(async(req: Request, res: Response) => {
     data: deletedTask,
   });
 })
+export const getTasksByAssignee = catchAsync(async (req, res) => {
+  const { email } = req.query;
+  if (!email || typeof email !== "string") {
+    return SendResponse(res, {
+      statusCode: 400,
+      success: false,
+      message: "Email is required",
+      data: null,
+    });
+  }
+
+  const result = await TaskService.getTasksByAssignee(email, req.query);
+
+  SendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Assigned tasks retrieved successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
