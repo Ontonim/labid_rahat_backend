@@ -15,11 +15,12 @@ class QueryBuilder {
         this.modelQuery = modelQuery;
         this.query = query;
     }
-    // Filter: category, status, author, etc.
     filter() {
         const filter = Object.assign({}, this.query);
-        const excludedFields = ["searchTerm", "searchTerms", "sort", "fields", "page", "limit"];
+        const excludedFields = ["email", "searchTerm", "searchTerms", "sort", "fields", "page", "limit"]; // ✅ email add করুন
         excludedFields.forEach(field => delete filter[field]);
+        console.log('🔍 Existing filter:', this.modelQuery.getFilter());
+        console.log('🔍 Query filter after exclusion:', filter);
         this.modelQuery = this.modelQuery.find(filter);
         return this;
     }
