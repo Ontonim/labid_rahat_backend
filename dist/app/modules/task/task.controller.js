@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTask = exports.updateTask = exports.getTaskById = exports.getAllTasks = exports.createTask = void 0;
+exports.getTasksByAssignee = exports.deleteTask = exports.updateTask = exports.getTaskById = exports.getAllTasks = exports.createTask = void 0;
 const task_service_1 = require("./task.service");
 const catchAsync_1 = require("../../../utils/catchAsync");
 const sendResponse_1 = require("../../../utils/sendResponse");
@@ -103,5 +103,24 @@ exports.deleteTask = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
         success: true,
         message: "Task deleted successfully",
         data: deletedTask,
+    });
+}));
+exports.getTasksByAssignee = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.query;
+    if (!email || typeof email !== "string") {
+        return (0, sendResponse_1.SendResponse)(res, {
+            statusCode: 400,
+            success: false,
+            message: "Email is required",
+            data: null,
+        });
+    }
+    const result = yield task_service_1.TaskService.getTasksByAssignee(email, req.query);
+    (0, sendResponse_1.SendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Assigned tasks retrieved successfully",
+        meta: result.meta,
+        data: result.data,
     });
 }));
