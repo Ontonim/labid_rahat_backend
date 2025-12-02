@@ -1,11 +1,10 @@
-import { isActive, IUser, ModeratorApprovalStatus, Role } from "./user.interface";
+import { isActive, IUser, Role} from "./user.interface";
 import httpStatus from "http-status-codes"
 import { User } from "./user.model";
 import AppError from "../../../helpers/AppError";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../../config/envConfig";
 import { QueryBuilder } from "../../../utils/QueryBuilder";
-
 
 const createNewUser = async (payload: Partial<IUser> )=>{
 
@@ -18,6 +17,7 @@ const {email , password , ...rest} = payload;
     if(isUserExists){
         throw new AppError(httpStatus.BAD_REQUEST,'User Already Exist');
     }
+    
 
     const  passwordHash = await bcrypt.hash(password as string,envVars.BCRYPT_SALT_ROUND);
 
@@ -25,14 +25,12 @@ const {email , password , ...rest} = payload;
         ...rest,
         email,
         password: passwordHash,
-        role: payload.role || Role.USER, 
+        role: payload.role || Role.MEMBER,
         status: isActive.ACTIVE,
-        isVerified: false,
+     
         isDeleted: false,
     };
-    if (payload.role === Role.MODERATOR) {
-        userData.role = Role.PENDING; 
-    }
+    
     const user = await User.create(userData);
 
 
@@ -40,12 +38,36 @@ const {email , password , ...rest} = payload;
     
   
     return user;
-}
+};
+
+const updateUser = async (userId: string, updateData: Partial<IUser>) => {
+  if (updateData && "access" in updateData) {
+    delete updateData.access;
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Access field cannot be updated directly"
+    );
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedUser)
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+
+  return updatedUser;
+};
+
 
 const getAllUsers = async (query: Record<string, string>) => {
-  const queryBuilder = new QueryBuilder(User.find(), query)
+  const queryBuilder = new QueryBuilder(
+    User.find({ isDeleted: false }),
+    query
+  )
     .filter()
-    .search(["email", "name"]) 
+    .search(["name"])
     .sort()
     .paginate();
 
@@ -54,9 +76,14 @@ const getAllUsers = async (query: Record<string, string>) => {
 
   return { data, meta };
 };
+const getAllMemberEamil = async () => {
+  const members = await User.find({ access: Role.MEMBER, isDeleted: false }).select("email");
+  return members.map(member => member.email);
+}
+
 
 const getSingleUser = async (userId: string) => {
-  const user = await User.findById(userId)
+  const user = await User.findOne({ _id: userId, isDeleted: false }); 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -69,40 +96,13 @@ const getUsersByRole = async (role: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid role");
   }
 
-  const users = await User.find({ role });
-
+  const users = await User.find({ role, isDeleted: false }); 
   return users;
 };
 
 
-const updateModeratorApprovalStatus = async (
-  userId: string,
-  approvalStatus: ModeratorApprovalStatus
-) => {
-  if (!Object.values(ModeratorApprovalStatus).includes(approvalStatus)) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid approval status");
-  }
 
-  let newRole = Role.USER;
-  if (approvalStatus === ModeratorApprovalStatus.ACCEPTED) {
-    newRole = Role.MODERATOR;
-  }
 
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    {
-      agentApproval: approvalStatus,
-      role: newRole,
-    },
-    { new: true }
-  );
-
-  if (!updatedUser) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  return updatedUser;
-};
 
 const updateAccountStatus = async (id: string, status?: string) => {
   if (!status || typeof status !== 'string') {
@@ -120,22 +120,6 @@ const updateAccountStatus = async (id: string, status?: string) => {
     { isActive: normalizedStatus }, // এখানে ঠিক করা হয়েছে
     { new: true }
   );
-
-  if (!updatedUser) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  return updatedUser;
-};
- const updateUser = async (userId: string, updateData: Partial<IUser>) => {
-  if (updateData && "role" in updateData) {
-    delete updateData.role;  
-  }
-
-  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-    new: true,
-    runValidators: true,
-  });
 
   if (!updatedUser) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
@@ -163,17 +147,34 @@ const updateUserRole = async (userId: string, newRole: Role) => {
 
   return updatedUser;
 };
+const getAllLimitedMembers = async () => {
+  const members = await User.find({ access: Role.MEMBER, isDeleted: false }) 
+    .select("name role bio expertise image");
+  return members;
+};
 
-
+const deleteUser = async (userId: string) => {
+  const user = await User.findById(userId)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+ 
+  const deletedUser = await User.findByIdAndUpdate(
+    userId,
+    { isDeleted: true },
+    { new: true }
+  );
+  return deletedUser;
+}
 export const UserService = {
   getAllUsers,
   getSingleUser,
   getUsersByRole,
-    createNewUser,
-    updateModeratorApprovalStatus,
-    updateAccountStatus,
-    updateUser,
-    updateUserRole,
-    
-  
+  createNewUser,
+  getAllLimitedMembers,
+  updateAccountStatus,
+  updateUser,
+  updateUserRole,
+  deleteUser,
+  getAllMemberEamil
 }

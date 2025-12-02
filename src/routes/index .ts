@@ -4,15 +4,19 @@ import { AuthRoutes } from "../app/modules/auth/auth.route"
 import { TaskRoutes } from "../app/modules/task/task.route"
 import { ContentRequestRoutes } from "../app/modules/contentRequest/contentReq.route"
 import { UpcomingVideoRoutes } from "../app/modules/upCommingVideo/upCommingVideo.route"
-import { BlogRoutes } from "../app/modules/blogs/blog.route"
 import { VideoRoutes } from "../app/modules/video/video.route"
+import { CommentRoutes } from "../app/modules/comment/comment.route"
+import { BlogRoutes } from "../app/modules/blogs/blog.route"
+import { NewsletterRoutes } from "../app/modules/newslatter/newslatter.route"
+import { ContactRoutes } from "../app/modules/contactMessage/contactMessage.route"
+import { DashboardOverviewRoutes} from "../app/modules/dashboardOverview/dashboardOverview.route"
 
 
 export const router = Router()
 
 const moduleRoutes = [
     {
-        path: "/user",
+        path: "/members",
         route: UserRoutes
     },
     {
@@ -38,6 +42,22 @@ const moduleRoutes = [
     {
         path: "/videos",
         route: VideoRoutes
+    },
+    {
+        path: "/comments",
+        route: CommentRoutes
+    },
+    {
+        path: "/newsletter",
+        route: NewsletterRoutes
+    },
+    {
+        path: "/contact",
+        route: ContactRoutes
+    },
+    {
+        path: "/dashboard-overview",
+        route: DashboardOverviewRoutes
     }
 ]
 

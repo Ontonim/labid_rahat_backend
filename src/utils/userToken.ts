@@ -10,7 +10,7 @@ export const createUserTokens = (user:Partial<IUser>)=>{
     const jwtPayload = {
             userId: user._id,
             email: user.email,
-            role: user.role
+            access: user.access
         }
         const accessToken = generateToken(jwtPayload,envVars.JWT_ACCESS_SECRET,envVars.JWT_ACCESS_EXPIRES)
 
@@ -38,12 +38,7 @@ export const createNewAccessTokenWithRefreshToken = async (refreshToken: string)
     throw new AppError(httpStatus.BAD_REQUEST, 'User Not Exist');
   }
 
-  if (
-    isUserExist.isActive === isActive.BLOCKED ||
-    isUserExist.isActive === isActive.INACTIVE
-  ) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'User is Blocked/Inactive');
-  }
+
 
   if (isUserExist.isDeleted) {
     throw new AppError(httpStatus.BAD_REQUEST, 'User deleted');
@@ -52,7 +47,7 @@ export const createNewAccessTokenWithRefreshToken = async (refreshToken: string)
   const jwtPayload = {
     userId: isUserExist._id,
     email: isUserExist.email,
-    role: isUserExist.role,
+    access: isUserExist.access,
   };
 
   const accessToken = generateToken(

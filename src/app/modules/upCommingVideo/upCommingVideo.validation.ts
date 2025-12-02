@@ -1,7 +1,6 @@
 import * as z from "zod";
 
 export const createUpcomingVideoValidation = z.object({
-  body: z.object({
     title: z.string().min(1, "Title is required"),
     description: z.string().optional(),
     releaseDate: z.string().refine(
@@ -10,13 +9,12 @@ export const createUpcomingVideoValidation = z.object({
     ),
     Imageurl: z.string().url("Invalid image URL").optional(),
     isPublished: z.boolean().optional(),
-  }),
 });
 
 
   
 export const updateUpcomingVideoValidation = z.object({
-  body: z.object({
+
     title: z.string().min(1, "Title is required").optional(),
     description: z.string().optional(),
     releaseDate: z.string().refine(
@@ -25,5 +23,5 @@ export const updateUpcomingVideoValidation = z.object({
     ).optional(),
     Imageurl: z.string().url("Invalid image URL").optional(),
     isPublished: z.boolean().optional(),
-  }),
+
 });
