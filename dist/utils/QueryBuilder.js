@@ -1,0 +1,81 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueryBuilder = void 0;
+class QueryBuilder {
+    constructor(modelQuery, query) {
+        this.modelQuery = modelQuery;
+        this.query = query;
+    }
+    filter() {
+        const filter = Object.assign({}, this.query);
+        const excludedFields = ["email", "searchTerm", "searchTerms", "sort", "fields", "page", "limit"]; // ✅ email add করুন
+        excludedFields.forEach(field => delete filter[field]);
+        console.log('🔍 Existing filter:', this.modelQuery.getFilter());
+        console.log('🔍 Query filter after exclusion:', filter);
+        this.modelQuery = this.modelQuery.find(filter);
+        return this;
+    }
+    // Search: safe search using RegExp
+    search(searchableFields) {
+        const searchTerm = this.query.searchTerm || this.query.searchTerms;
+        if (searchTerm && typeof searchTerm === "string" && searchTerm.trim() !== "") {
+            const regex = new RegExp(searchTerm.trim(), "i"); // safe RegExp
+            this.modelQuery = this.modelQuery.find({
+                $or: searchableFields.map(field => ({ [field]: regex })),
+            });
+        }
+        return this;
+    }
+    // Sorting
+    sort() {
+        const sortBy = this.query.sort || "-createdAt";
+        this.modelQuery = this.modelQuery.sort(sortBy);
+        return this;
+    }
+    // Select specific fields
+    fields() {
+        var _a;
+        const fields = ((_a = this.query.fields) === null || _a === void 0 ? void 0 : _a.split(",").join(" ")) || "";
+        if (fields) {
+            this.modelQuery = this.modelQuery.select(fields);
+        }
+        return this;
+    }
+    // Pagination
+    paginate() {
+        const page = this.query.page ? parseInt(this.query.page) : 1;
+        const limit = this.query.limit ? parseInt(this.query.limit) : 10;
+        const skip = (page - 1) * limit;
+        this.modelQuery = this.modelQuery.skip(skip).limit(limit);
+        return this;
+    }
+    // Build final query
+    build() {
+        return this.modelQuery;
+    }
+    // Meta info for pagination
+    getMeta() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const totalDocuments = yield this.modelQuery.model.countDocuments();
+            const page = this.query.page ? parseInt(this.query.page) : 1;
+            const limit = this.query.limit ? parseInt(this.query.limit) : 10;
+            const totalPages = Math.ceil(totalDocuments / limit);
+            return {
+                total: totalDocuments,
+                page,
+                limit,
+                totalPages,
+            };
+        });
+    }
+}
+exports.QueryBuilder = QueryBuilder;
